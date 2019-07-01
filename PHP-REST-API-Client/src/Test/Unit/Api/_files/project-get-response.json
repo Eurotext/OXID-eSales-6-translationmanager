@@ -1,0 +1,48 @@
+{
+    "description": "the project description",
+    "items": {
+        "1": {
+            "__meta": {
+                "id-in-your-system": 5,
+                "other-information": "will-not-be-translated"
+            },
+            "description": "Some arbitrary structure.",
+            "complex": [
+                "as",
+                "you",
+                "like"
+            ],
+            "but": "json at last.",
+            "status": ""
+        },
+        "2": {
+            "__meta": {
+                "id-in-your-system": 5,
+                "other-information": "will-not-be-translated"
+            },
+            "description": "Some arbitrary structure.",
+            "complex": [
+                "as",
+                "you",
+                "like"
+            ],
+            "but": "json at last.",
+            "status": ""
+        },
+        "3": {
+            "__meta": {
+                "id-in-your-system": 5,
+                "other-information": "will-not-be-translated"
+            },
+            "description": "Some arbitrary structure.",
+            "complex": [
+                "as",
+                "you",
+                "like"
+            ],
+            "but": "json at last.",
+            "status": ""
+        }
+    },
+    "files": []
+}

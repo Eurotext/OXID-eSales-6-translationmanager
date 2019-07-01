@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OX>
+    <OXMENU id="ETTM_TRANSLATION">
+        <MAINMENU id="ETTM_HOME">
+            <SUBMENU id="ETTM_REGISTRATION" cl="translationmanager_registration"/>
+            <SUBMENU id="ETTM_SETTINGS" cl="translationmanager_settings"/>
+            <SUBMENU id="ETTM_EXPORT" cl="translationmanager_export" list="translationmanager_export_list">
+                <TAB id="ETTM_EXPORT_MAIN" cl="translationmanager_export_detail" />
+                <BTN id="ETTM_PROJECT_NEW" />
+                <BTN id="ETTM_HELP" cl="translationmanager_help" />
+                <BTN id="ETTM_VERSION" />
+            </SUBMENU>
+            <SUBMENU id="ETTM_IMPORT" cl="translationmanager_import" list="translationmanager_import_list">
+                <TAB id="ETTM_IMPORT_MAIN" cl="translationmanager_import_detail" />
+            </SUBMENU>
+            <SUBMENU id="ETTM_HELP" cl="translationmanager_help"/>
+        </MAINMENU>
+    </OXMENU>
+</OX>

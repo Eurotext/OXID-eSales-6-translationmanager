@@ -1,0 +1,37 @@
+{
+    "name": "eurotext/translationmanager6",
+    "authors": [
+        {
+            "name": "Ilja Weber",
+            "email": "ilja.weber@mobilemojo.de"
+        }
+    ],
+    "require": {
+        "php": "~7.0.0|~7.1.0|~7.2.0",
+        "ext-json": "*",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Eurotext\\Translationmanager\\": "../../../source/modules/eurotext/translationmanager6"
+        }
+    },
+    "repositories": {
+        "oxid-esales/coding-standards": {
+            "type": "vcs",
+            "url": "https://github.com/OXID-eSales/coding_standards.git"
+        },
+        "squizlabs/php_codesniffer": {
+            "type": "vcs",
+            "url": "https://github.com/OXID-eSales/PHP_CodeSniffer.git"
+        }
+    },
+    "require-dev": {
+        "oxid-esales/coding-standards": "^2.0.0"
+    },
+    "extra": {
+        "oxideshop": {
+            "target-directory": "eurotext/translationmanager"
+        }
+    }
+}
