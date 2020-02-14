@@ -95,6 +95,7 @@ $aLang = array(
     'ETTM_EXPORT_TRANSMIT' => 'Daten übermitteln',
     'ETTM_EXPORT_TRANSMIT_TEXTBLOCK' => '<p>Mit einem Klick auf den nachfolgenden Button werden die ausgewählten Texte an das Übersetzungsportal übermittelt und Sie erhalten innerhalb von 24 Stunden (werktags) ein detailliertes Angebot für die Übersetzung Ihrer Inhalte.</p><p>Dieser Vorgang kann je nach Auswahl mehrere Minuten dauern. Brechen Sie den Vorgang nicht ab und warten Sie, bis sie die Erfolgsmeldung angezeigt bekommen.</p>',
     'ETTM_EXPORT_TRANSMIT_SKIP' => ' - Bereits übersetzte Elemente überspringen.',
+    'ETTM_EXPORT_START_AFTER_EXPORT'   => ' - Start the translation immediately after the export.',
     'ETTM_EXPORT_TRANSMIT_START' => 'Export starten',
 
     'ETTM_EXPORT_STATUS' => 'Status',

@@ -272,10 +272,17 @@ function customOpenModal(url) {
                         <span><strong>[{oxmultilang ident="ETTM_EXPORT_TRANSMIT_SKIP"}]</strong></span>
                     </label>
 
+                    <br>
+
+                    <label class="uk-margin">
+                        <input type="checkbox" name="editval[ettm_project__start_after_export]" value="1">
+                        <span><strong>[{oxmultilang ident="ETTM_EXPORT_START_AFTER_EXPORT"}]</strong></span>
+                    </label>
+
                 </fieldset>
             </div>
             <div class="uk-width-1-1">
-                <input type="submit" class="edittext" name="exportToRemote" value="[{oxmultilang ident="ETTM_EXPORT_TRANSMIT_START"}]" onclick="javascript:document.myedit.fnc.value='startExport';">
+                <input type="submit" class="edittext ettm-button-start" name="exportToRemote" value="[{oxmultilang ident="ETTM_EXPORT_TRANSMIT_START"}]" onclick="javascript:document.myedit.fnc.value='startExport';">
             </div>
             [{/if}]
 
@@ -321,7 +328,7 @@ function customOpenModal(url) {
                             <td>[{$edit->ettm_project__failed->value}] [{oxmultilang ident="ETTM_EXPORT_STATUS_ITEM"}]</td>
                         </tr>
                     </table>
-                    <input type="submit" class="edittext" name="startTranslation" value="[{oxmultilang ident="ETTM_EXPORT_TRANSLATION_START"}]" onclick="javascript:document.myedit.fnc.value='startTranslation';">
+                    <input type="submit" class="edittext ettm-button-start" name="startTranslation" value="[{oxmultilang ident="ETTM_EXPORT_TRANSLATION_START"}]" onclick="javascript:document.myedit.fnc.value='startTranslation';">
                 </fieldset>
             </div>
             [{/if}]

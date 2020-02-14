@@ -88,7 +88,7 @@ function editThis( sID )
                 <fieldset>
                     <legend><strong>[{oxmultilang ident="ETTM_IMPORT_STATUS"}]</strong></legend>
                     [{oxmultilang ident="ETTM_EXPORT_STATUS_TEXTBLOCK2"}]
-                    <input type="submit" class="edittext" name="startTranslation" value="[{oxmultilang ident="ETTM_EXPORT_TRANSLATION_START"}]" onclick="javascript:document.myedit.fnc.value='startTranslation';">
+                    <input type="submit" class="edittext ettm-button-start" name="startTranslation" value="[{oxmultilang ident="ETTM_EXPORT_TRANSLATION_START"}]" onclick="javascript:document.myedit.fnc.value='startTranslation';">
                 </fieldset>
             </div>
             [{/if}]
@@ -107,7 +107,7 @@ function editThis( sID )
                 <fieldset>
                     <legend><strong>[{oxmultilang ident="ETTM_IMPORT_IMPORT"}]</strong></legend>
                     [{oxmultilang ident="ETTM_IMPORT_IMPORT_TEXTBLOCK"}]
-                    <input type="submit" class="edittext" name="startImport" value="[{oxmultilang ident="ETTM_IMPORT_START"}]" onClick="Javascript:document.myedit.fnc.value='startImport'">
+                    <input type="submit" class="edittext ettm-button-start" name="startImport" value="[{oxmultilang ident="ETTM_IMPORT_START"}]" onClick="Javascript:document.myedit.fnc.value='startImport'">
                 </fieldset>
             </div>
             [{/if}]

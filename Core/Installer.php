@@ -6,13 +6,14 @@
 
 namespace Eurotext\Translationmanager\Core;
 
+use OxidEsales\Eshop\Core\DatabaseProvider;
+
 /**
  * Settings class
  *
  */
 class Installer
 {
-
 
     /**
      * Actions to execute on module activation.
@@ -22,31 +23,6 @@ class Installer
     public static function onActivate()
     {
         self::_createProjectTable();
-
-        $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
-        $sOxId = $oConfig->getShopId();
-
-        // Set default values to settings
-        $oConfig->saveShopConfVar('str', 'sCONNSTATUS', '0', $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('str', 'sAPIKEY', '', $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('str', 'sSERVICEURL', 'https://sandbox.api.eurotext.de', $sOxId, 'module:translationmanager6');
-
-        // Preselected fields.
-        $oConfig->saveShopConfVar('arr', 'cmsfields', array('OXTITLE', 'OXCONTENT'), $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('arr', 'categoryfields', array('OXTITLE', 'OXDESC', 'OXLONGDESC'), $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('arr', 'attributesfields', array('OXTITLE'), $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('arr', 'o2attributesfields', array('OXVALUE'), $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('arr', 'articlesfields', array('OXTITLE', 'OXSHORTDESC', 'OXVARNAME', 'OXVARSELECT'), $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('arr', 'artextendsfields', array('OXLONGDESC'), $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('arr', 'cmsseofields', array(), $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('arr', 'categoryseofields', array(), $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('arr', 'articleseofields', array(), $sOxId, 'module:translationmanager6');
-
-        // Set default values to settings
-        $oConfig->saveShopConfVar('str', 'sEXPORTJOBIPJ', '20', $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('str', 'sIMPORTJOBIPJ', '20', $sOxId, 'module:translationmanager6');
-        $oConfig->saveShopConfVar('str', 'sTRANSLATIONJOBIPJ', '20', $sOxId, 'module:translationmanager6');
-
         return;
     }
 
@@ -80,10 +56,15 @@ class Installer
           `CREATED_AT` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp when created',
           `UPDATED_AT` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp when updated',
           `STATUS` int(11) NOT NULL DEFAULT '0' COMMENT 'Project status',
+          `ONLY_UNTRANSLATED` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 - select all items for translations, 1 - select only those without translation',
+          `START_AFTER_EXPORT` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 - dont start, 1 - start',
+          `TRANSMITTED` tinyint(4) NOT NULL DEFAULT '0',
+          `SKIPPED` tinyint(4) NOT NULL DEFAULT '0',
+          `FAILED` tinyint(4) NOT NULL DEFAULT '0',
           PRIMARY KEY (`OXID`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
-        \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute($sCreateProjectMainTable);
+        DatabaseProvider::getDb()->execute($sCreateProjectMainTable);
 
         $sCreateProjectToCmsTable = "CREATE TABLE IF NOT EXISTS `ettm_project2cms` (
           `OXID` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -98,7 +79,7 @@ class Installer
           KEY `ETTM_PROJECT_ID_OXCMSID` (`PROJECT_ID`,`OXCMSID`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
-        \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute($sCreateProjectToCmsTable);
+        DatabaseProvider::getDb()->execute($sCreateProjectToCmsTable);
 
         $sCreateProjectToCategoryTable = "CREATE TABLE IF NOT EXISTS `ettm_project2category` (
           `OXID` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -113,7 +94,7 @@ class Installer
           KEY `ETTM_PROJECT_ID_OXCATEGORYID` (`PROJECT_ID`,`OXCATEGORYID`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
-        \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute($sCreateProjectToCategoryTable);
+        DatabaseProvider::getDb()->execute($sCreateProjectToCategoryTable);
 
         $sCreateProjectToAttributeTable = "CREATE TABLE IF NOT EXISTS `ettm_project2attribute` (
           `OXID` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -128,7 +109,7 @@ class Installer
           KEY `ETTM_PROJECT_ID_OXATTRIBUTEID` (`PROJECT_ID`,`OXATTRIBUTEID`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
-        \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute($sCreateProjectToAttributeTable);
+        DatabaseProvider::getDb()->execute($sCreateProjectToAttributeTable);
 
         $sCreateProjectToArticleTable = "CREATE TABLE IF NOT EXISTS `ettm_project2article` (
           `OXID` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -143,7 +124,7 @@ class Installer
           KEY `ETTM_PROJECT_ID_OXARTICLEID` (`PROJECT_ID`,`OXARTICLEID`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
-        \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute($sCreateProjectToArticleTable);
+        DatabaseProvider::getDb()->execute($sCreateProjectToArticleTable);
 
         $sCreateImportItems = "CREATE TABLE IF NOT EXISTS `ettm_importjobs` (
           `OXID` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -154,6 +135,6 @@ class Installer
           `CREATED_AT` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
-        \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute($sCreateImportItems);
+        DatabaseProvider::getDb()->execute($sCreateImportItems);
     }
 }

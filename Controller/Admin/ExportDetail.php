@@ -188,6 +188,11 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
             $oProject->assign(array('ettm_project__only_untranslated' => 1));
         }
 
+        // If start translations right after export is finished.
+        if (isset($aParams['ettm_project__start_after_export']) && 1 === intval($aParams['ettm_project__start_after_export'])) {
+            $oProject->assign(array('ettm_project__start_after_export' => 1));
+        }
+
         $oProject->save();
 
         $this->_aViewData['updatelist'] = 1;

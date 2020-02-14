@@ -521,7 +521,12 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
             $aParams['ettm_project__total_items'] = 0;
             $aParams['ettm_project__finished_items'] = 0;
             $aParams['ettm_project__percent_finished'] = 0;
-            $aParams['ettm_project__status'] = 40;
+
+            if (1 === intval($this->ettm_project__start_after_export->rawValue)) {
+                $this->startTranslation();
+            } else {
+                $aParams['ettm_project__status'] = 40;
+            }
         }
 
         // Update counters

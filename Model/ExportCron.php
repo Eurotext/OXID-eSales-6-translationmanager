@@ -111,8 +111,6 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         print_r($aItems);
 
         foreach ($aItems as $iIndex => $aItem) {
-            $aCurrentProject['DIRTY'] = true;
-
             $exportable = !$aItem['innermeta']['skip'];
             $skipped = $aItem['innermeta']['skip'];
             $iTransmitted = 0;
@@ -122,6 +120,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             unset($aItem['innermeta']);
 
             $aCurrentProject = &$aProjects[$aItemInnerMeta['project_index']];
+            $aCurrentProject['DIRTY'] = true;
 
             $iExternalProjectid = $aCurrentProject['EXTERNAL_ID'];
 
