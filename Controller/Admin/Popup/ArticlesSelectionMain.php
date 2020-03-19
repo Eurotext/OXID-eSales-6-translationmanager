@@ -31,6 +31,34 @@ class ArticlesSelectionMain extends \OxidEsales\Eshop\Application\Controller\Adm
         $iShopId = \OxidEsales\Eshop\Core\Registry::getConfig()->getActiveShop()->getId();
         $this->_getCategoryTree('artcattree', '', '', false, $iShopId);
 
+        // Selected target languages
+        $this->_aViewData['editlangs'] = array();
+
+        $sOxId = $this->getEditObjectId();
+        if (isset($sOxId) && (-1 !== intval($sOxId))) {
+            // load object
+            $oProject = oxNew('\Eurotext\Translationmanager\Model\Project');
+            $oProject->load($sOxId);
+
+            $langs = unserialize($oProject->ettm_project__lang_target->rawValue);
+
+            $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
+            $aLanguages = $oLang->getLanguageArray();
+            $aRetArray = array();
+            foreach ($aLanguages as $aLanguage) {
+                $aRetArray[$aLanguage->abbr] = $aLanguage->id;
+            }
+
+            $newLang = array();
+            foreach ($langs as $lang) {
+                $newLang[] = $aRetArray[$lang];
+            }
+
+            $this->_aViewData['editlangs'] = implode(',', $newLang);
+        }
+
+
+
         return $this->_sThisTemplate;
     }
 

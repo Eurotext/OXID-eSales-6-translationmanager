@@ -20,6 +20,9 @@
         <td colspan="2">[{ oxmultilang ident="AJAX_DESCRIPTION" }]<br>[{ oxmultilang ident="GENERAL_FILTERING" }]<br /><br /></td>
     </tr>
     <tr class="edittext">
+        <td colspan="2"><input type="checkbox" name="skiptranslated" class="editinput" value="[{$editlangs}]" checked="checked"> [{ oxmultilang ident="EXPORT_ART_SKIPTRANSLATES" }]</td>
+    </tr>
+    <tr class="edittext">
         <td align="center"><b>[{ oxmultilang ident="EXPORT_MAIN_ALLARTICLES" }]</b></td>
         <td align="center"><b>[{ oxmultilang ident="EXPORT_MAIN_ARTICLESINPROJECT" }]</b></td>
     </tr>
@@ -39,10 +42,15 @@
 
 <script type="text/javascript">
     $E.onDOMReady( function() {
+        var addFilter = '';
+        if (document.querySelector('input[name="skiptranslated"]').checked) {
+            addFilter += '&targetlangs='+document.querySelector('input[name="skiptranslated"]').value;
+        }
+
         YAHOO.oxid.container1 = new YAHOO.oxid.aoc(
             'container1',
             [{$traslHeaders.container1|@json_encode}],
-            '[{ $oViewConf->getAjaxLink() }]cmpid=container1&container=translationmanager_articles_selection&projectid=[{ $oxid }]'
+            '[{ $oViewConf->getAjaxLink() }]cmpid=container1&container=translationmanager_articles_selection&projectid=[{ $oxid }]' + addFilter
         );
 
         YAHOO.oxid.container2 = new YAHOO.oxid.aoc(
@@ -64,11 +72,20 @@
             if ( 0 < oSelect.selectedIndex ) {
                 sRequest += '&catid='+oSelect.options[oSelect.selectedIndex].value;
             }
+
+            if (!document.querySelector('input[name="skiptranslated"]').checked) {
+                sRequest += '&nofilter=1';
+            }
+
             return sRequest;
         }
 
-        oSelect = document.getElementById('artcat')
+        oSelect = document.getElementById('artcat');
         oSelect.addEventListener('change', function(e) {
+            YAHOO.oxid.container1.getPage( 0 );
+        });
+
+        document.querySelector('input[name="skiptranslated"]').addEventListener('change', function(e) {
             YAHOO.oxid.container1.getPage( 0 );
         });
     } );

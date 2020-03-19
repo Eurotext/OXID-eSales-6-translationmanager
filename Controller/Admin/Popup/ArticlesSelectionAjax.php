@@ -52,6 +52,17 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
         $sContainerName = $oConfig->getRequestParameter('cmpid');
         $sProjectId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oConfig->getRequestParameter('projectid'));
 
+        // Has target langs selected?
+        $sJoins = '';
+        if ($oConfig->getRequestParameter('targetlangs') && 1 !== intval($oConfig->getRequestParameter('nofilter'))) {
+            $aTargetLangIds = explode(',', $oConfig->getRequestParameter('targetlangs'));
+            foreach ($aTargetLangIds as $iTargetLangId) {
+                // Get view and create join statement
+                $sTableName = getViewName('oxarticles', $iTargetLangId);
+                $sJoins .= "JOIN $sTableName ON $sTableName.OXID = $sArticleTable.OXID AND $sTableName.OXTITLE = ''";
+            }
+        }
+
         if ('container1' === $sContainerName) {
             $sAddtionalJoint = '';
             if (\OxidEsales\Eshop\Core\Registry::getConfig()->getRequestParameter('catid')) {
@@ -64,12 +75,14 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
                     ON $sJoinTable.OXARTICLEID = $sArticleTable.OXID AND $sJoinTable.PROJECT_ID = $sProjectId
                     INNER JOIN $sCategoryTable
                     ON $sCategoryTable.OXOBJECTID = $sArticleTable.OXID AND $sCategoryTable.OXCATNID = $sCatId
+                    $sJoins
                     WHERE $sJoinTable.OXID IS NULL";
             } else {
                 // No category is selected.
                 $sQAdd = " from $sArticleTable
                     LEFT JOIN $sJoinTable
                     ON $sJoinTable.OXARTICLEID = $sArticleTable.OXID AND $sJoinTable.PROJECT_ID = $sProjectId
+                    $sJoins
                     WHERE $sJoinTable.OXID IS NULL";
             }
 
