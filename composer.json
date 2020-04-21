@@ -6,6 +6,8 @@
             "email": "ilja.weber@mobilemojo.de"
         }
     ],
+    "license": "GPL-3.0-only",
+    "type": "oxideshop-module",
     "require": {
         "php": "~7.0.0|~7.1.0|~7.2.0|~7.3.0",
         "ext-json": "*",
