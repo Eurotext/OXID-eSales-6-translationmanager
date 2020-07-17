@@ -33,8 +33,18 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $this->init('ettm_project');
 
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
-        $this->_sApiKey = $oConfig->getShopConfVar('sAPIKEY', $oConfig->getShopId(), 'module:translationmanager6');
-        $this->_sUriBaseFull = $oConfig->getShopConfVar('sSERVICEURL', $oConfig->getShopId(), 'module:translationmanager6') . $this->_sUriBase;
+
+        if (isset($_GET['shopId'])) {
+            $iShopId = intval($_GET['shopId']);
+        } else {
+            $iShopId = $oConfig->getShopId();
+        }
+
+        // Hack to allow saving progress. Author: Ilja Weber <ilja.weber@mobilemojo.de>
+        $this->setIsDerived(false);
+
+        $this->_sApiKey = $oConfig->getShopConfVar('sAPIKEY', $iShopId, 'module:translationmanager6');
+        $this->_sUriBaseFull = $oConfig->getShopConfVar('sSERVICEURL', $iShopId, 'module:translationmanager6') . $this->_sUriBase;
     }
 
     /**
@@ -340,6 +350,10 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
             $aParams['ettm_project__finished_items'] = 0;
             $aParams['ettm_project__percent_finished'] = 0;
             $aParams['ettm_project__status'] = 60;
+
+            // Load import jobs.
+            $this->loadImportItems();
+            $this->updateImportProgress();
         }
 
         $this->assign($aParams);
@@ -545,9 +559,8 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
             $aParams['ettm_project__skipped'] = $oRs->fields['SKIPPED'];
             $aParams['ettm_project__failed'] = $oRs->fields['FAILED'];
         }
-
         $this->assign($aParams);
-        $this->save();
+        $return = $this->save();
 
         return;
     }

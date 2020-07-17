@@ -37,6 +37,8 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         $sOxId = $this->_aViewData['oxid'] = $this->getEditObjectId();
         $this->_aViewData['projectstatus'] = 0;
 
+
+
         // Current language
         // List available languages
         $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
@@ -83,6 +85,11 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         $this->_aViewData['cmscount'] = $iCmsCount;
 
         $this->_aViewData['totalcount'] = $iAttributesCount + $iArticlesCount + $iCategoriesCount + $iCmsCount;
+
+        $oShop = \OxidEsales\Eshop\Core\Registry::getConfig()->getActiveShop();
+
+        $this->_aViewData['ettm_ismulti'] = isset($oShop->oxshops__oxismultishop) ? ((bool) $oShop->oxshops__oxismultishop->value) : false;
+        $this->_aViewData['ettm_issub'] = isset($oShop->oxshops__oxissubshop) ? ((bool) $oShop->oxshops__oxissubshop->value) : false;
 
         return $this->_sThisTemplate;
     }

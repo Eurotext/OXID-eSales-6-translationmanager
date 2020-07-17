@@ -46,10 +46,24 @@ class CategoriesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\A
         $sContainerName = $oConfig->getRequestParameter('cmpid');
         $sProjectId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oConfig->getRequestParameter('projectid'));
 
+        $oShop = \OxidEsales\Eshop\Core\Registry::getConfig()->getActiveShop();
+        $oShopId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oShop->getId());
+
+        $sCategories2ShopTable = $this->_getViewName('oxcategories2shop');
+        $bIsMulti = isset($oShop->oxshops__oxismultishop) ? ((bool) $oShop->oxshops__oxismultishop->value) : false;
+        //$bIsSub = isset($oShop->oxshops__oxissubshop) ? ((bool) $oShop->oxshops__oxissubshop->value) : false;
+
+        if (!$bIsMulti) {
+            $sShopJoin = "JOIN $sCategories2ShopTable ON $sCategories2ShopTable.OXMAPOBJECTID = $sCategoriesTable.OXMAPID AND $sCategories2ShopTable.OXSHOPID = $oShopId ";
+        } else {
+            $sShopJoin = "";
+        }
+
         if ('container1' === $sContainerName) {
             $sQAdd = " from $sCategoriesTable
                 LEFT JOIN $sJoinTable
                 ON $sJoinTable.OXCATEGORYID = $sCategoriesTable.OXID AND $sJoinTable.PROJECT_ID = $sProjectId
+                $sShopJoin
                 WHERE $sJoinTable.OXID IS NULL";
         } else {
             $sQAdd = " from $sCategoriesTable

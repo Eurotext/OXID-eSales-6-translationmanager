@@ -21,21 +21,34 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         // 0. Get some options
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
-        $maxImports = intval($oConfig->getShopConfVar('sIMPORTJOBIPJ', $oConfig->getShopId(), 'module:translationmanager6'));
+        if (isset($_GET['shopId'])) {
+            $iShopId = intval($_GET['shopId']);
+        } else {
+            $iShopId = $oConfig->getShopId();
+        }
+        $maxImports = intval($oConfig->getShopConfVar('sIMPORTJOBIPJ', $iShopId, 'module:translationmanager6'));
 
         $aUpdateProjects = array();
+        echo '<h1>Importablauf</h1>';
 
         // 1. Query all untouched jobs
+
+        echo '<h2>Import-JOBS vorbereiten</h2>';
         $aJobs = array();
         $this->_queryJobs($aJobs, $maxImports);
+        echo '<pre>';
+        print_r($aJobs);
+        echo '<pre>';
+
+        echo '<h2>Import-Details herunterladen</h2>';
 
         // 2. Get all data
         foreach ($aJobs as $index => $aJob) {
             $this->_getItemDetails($aJobs, $index);
         }
-
         echo '<pre>';
         print_r($aJobs);
+        echo '<pre>';
 
         // 3. Write to database
         foreach ($aJobs as $index => $aJob) {
@@ -103,65 +116,75 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         // 0. Get some helpers
         $aCodesMapping = $this->_getLangCodesMapping();
-        $aEurotextReverseMapping = $this->_getEurotextMapping();
 
-        $targetLanguageCode = $aCodesMapping[$aEurotextReverseMapping[$aJob['HEADERS']['X-Target'][0]]];
-        $sTargetTable = getViewName($aJob['BODY']['data']['__meta']['view'], $targetLanguageCode);
-        $sTargetOxid = $aJob['BODY']['data']['__meta']['OXID'];
-        $sShopId = $aJob['BODY']['data']['__meta']['origin_shop_id'];
+        // For each item.
+        foreach ($aJob['BODY']['data'] as $aItem) {
+            $iTargetLanguageCode = $aCodesMapping[$aItem['__meta']['target_lang']];
+            $iShopId = $aItem['__meta']['oxid_shop_id'];
+            $sTargetTable = getViewName($aItem['__meta']['oxid_item_table'], $iTargetLanguageCode, $iShopId);
+            $sTargetOxid = $aItem['__meta']['oxid_item_id'];
+            unset($aItem['__meta']);
 
-        $aData = $aJob['BODY']['data'];
-        unset($aData['__meta']);
+            if (0 < count($aItem)) {
+                echo "Import to table: " . $sTargetTable . "<br>";
+                echo '<pre>';
+                print_r($aItem);
+                echo '</pre>';
+            } else {
+                echo "Nothing to import. Skip<br>";
+            }
 
-        $aUpdateFields = array();
-        $aParams = array();
-        if (0 === count($aData)) {
-            // 2. Mark job as done with error
+            $aData = $aItem;
+
+            $aUpdateFields = array();
+            $aParams = array();
+            if (0 === count($aData)) {
+                // 2. Mark job as done with error
+                \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
+                    "UPDATE `ettm_importjobs` SET STATUS=10 WHERE OXID = ?",
+                    array($aJob['OXID'])
+                );
+                // 3. Add project for status update
+                $sProjectId = $aJob['PROJECT_ID'];
+                if (!in_array($sProjectId, $aUpdateProjects)) {
+                    $aUpdateProjects[] = $sProjectId;
+                }
+                return;
+            }
+            foreach ($aData as $sKey => $sValue) {
+                $aUpdateFields[] = $sKey . ' = ?';
+                $aParams[] = $sValue;
+            }
+            $sUpdateFields = implode(', ', $aUpdateFields);
+            $aParams[] = $sTargetOxid;
+
+            // 1. Write to table
+            if ('oxobject2seodata' === $sTargetTable) {
+                $aParams[] = $iShopId;
+                $aParams[] = $iTargetLanguageCode;
+
+                \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
+                    "UPDATE $sTargetTable SET $sUpdateFields WHERE OXOBJECTID = ? AND OXSHOPID= ? AND OXLANG = ?",
+                    $aParams
+                );
+            } else {
+                \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
+                    "UPDATE $sTargetTable SET $sUpdateFields WHERE OXID = ?",
+                    $aParams
+                );
+            }
+
+            // 2. Mark job as done
             \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
                 "UPDATE `ettm_importjobs` SET STATUS=10 WHERE OXID = ?",
                 array($aJob['OXID'])
             );
+
             // 3. Add project for status update
             $sProjectId = $aJob['PROJECT_ID'];
             if (!in_array($sProjectId, $aUpdateProjects)) {
                 $aUpdateProjects[] = $sProjectId;
             }
-            return;
-        }
-        foreach ($aData as $sKey => $sValue) {
-            $aUpdateFields[] = $sKey . ' = ?';
-            $aParams[] = $sValue;
-        }
-        $sUpdateFields = implode(', ', $aUpdateFields);
-        $aParams[] = $sTargetOxid;
-
-        // 1. Write to table
-        if ('oxobject2seodata' === $sTargetTable) {
-            $aParams[] = $sShopId;
-            $aParams[] = $targetLanguageCode;
-
-            \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
-                "UPDATE $sTargetTable SET $sUpdateFields WHERE OXOBJECTID = ? AND OXSHOPID= ? AND OXLANG = ?",
-                $aParams
-            );
-        } else {
-            \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
-                "UPDATE $sTargetTable SET $sUpdateFields WHERE OXID = ?",
-                $aParams
-            );
-        }
-
-
-        // 2. Mark job as done
-        \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
-            "UPDATE `ettm_importjobs` SET STATUS=10 WHERE OXID = ?",
-            array($aJob['OXID'])
-        );
-
-        // 3. Add project for status update
-        $sProjectId = $aJob['PROJECT_ID'];
-        if (!in_array($sProjectId, $aUpdateProjects)) {
-            $aUpdateProjects[] = $sProjectId;
         }
     }
 
@@ -175,8 +198,13 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         $aJob = $aJobs[$index];
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
-        $sAPIKEY = $oConfig->getShopConfVar('sAPIKEY', $oConfig->getShopId(), 'module:translationmanager6');
-        $sSERVICEURL = $oConfig->getShopConfVar('sSERVICEURL', $oConfig->getShopId(), 'module:translationmanager6');
+        if (isset($_GET['shopId'])) {
+            $iShopId = intval($_GET['shopId']);
+        } else {
+            $iShopId = $oConfig->getShopId();
+        }
+        $sAPIKEY = $oConfig->getShopConfVar('sAPIKEY', $iShopId, 'module:translationmanager6');
+        $sSERVICEURL = $oConfig->getShopConfVar('sSERVICEURL', $iShopId, 'module:translationmanager6');
 
         $iExternalProjectid = $aJob['EXTERNAL_PROJECT_ID'];
         $iExternalItemId = $aJob['EXTERNAL_ID'];
@@ -205,6 +233,22 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             // Do nothing
             $aJobs[$index]['QUERY_STATUS'] = 'fail';
         }
+    }
+
+    /**
+     * Returns integer code of langs in oxid.
+     *
+     * @return array
+     */
+    protected function _getInverseLangCodesMapping()
+    {
+        $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
+        $aLanguages = $oLang->getLanguageArray();
+        $aRetArray = array();
+        foreach ($aLanguages as $aLanguage) {
+            $aRetArray[$aLanguage->id] = $aLanguage->oxid;
+        }
+        return $aRetArray;
     }
 
     /**

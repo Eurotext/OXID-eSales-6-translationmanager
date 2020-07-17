@@ -46,13 +46,25 @@ class CmsSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Admin\Li
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
         $sContainerName = $oConfig->getRequestParameter('cmpid');
         $sProjectId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oConfig->getRequestParameter('projectid'));
-        $iShopId = \OxidEsales\Eshop\Core\Registry::getConfig()->getActiveShop()->getId();
+
+        $oShop = \OxidEsales\Eshop\Core\Registry::getConfig()->getActiveShop();
+        $oShopId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oShop->getId());
+
+        $bIsMulti = isset($oShop->oxshops__oxismultishop) ? ((bool) $oShop->oxshops__oxismultishop->value) : false;
+        //$bIsSub = isset($oShop->oxshops__oxissubshop) ? ((bool) $oShop->oxshops__oxissubshop->value) : false;
+
+        if (!$bIsMulti) {
+            $sShopWhere = " AND $sCmsTable.OXSHOPID = $oShopId ";
+        } else {
+            $sShopWhere = "";
+        }
+
 
         if ('container1' === $sContainerName) {
             $sQAdd = " from $sCmsTable
                 LEFT JOIN $sJoinTable
                 ON $sJoinTable.OXCMSID = $sCmsTable.OXID AND $sJoinTable.PROJECT_ID = $sProjectId
-                WHERE $sJoinTable.OXID IS NULL";
+                WHERE $sJoinTable.OXID IS NULL $sShopWhere";
         } else {
             $sQAdd = " from $sCmsTable
                 LEFT JOIN $sJoinTable

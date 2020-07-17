@@ -52,6 +52,19 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
         $sContainerName = $oConfig->getRequestParameter('cmpid');
         $sProjectId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oConfig->getRequestParameter('projectid'));
 
+        $oShop = \OxidEsales\Eshop\Core\Registry::getConfig()->getActiveShop();
+        $oShopId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oShop->getId());
+
+        $sArticle2ShopTable = $this->_getViewName('oxarticles2shop');
+        $bIsMulti = isset($oShop->oxshops__oxismultishop) ? ((bool) $oShop->oxshops__oxismultishop->value) : false;
+        //$bIsSub = isset($oShop->oxshops__oxissubshop) ? ((bool) $oShop->oxshops__oxissubshop->value) : false;
+
+        if (!$bIsMulti) {
+            $sShopJoin = "JOIN $sArticle2ShopTable ON $sArticle2ShopTable.OXMAPOBJECTID = $sArticleTable.OXMAPID AND $sArticle2ShopTable.OXSHOPID = $oShopId ";
+        } else {
+            $sShopJoin = "";
+        }
+
         // Has target langs selected?
         $sJoins = '';
         if ($oConfig->getRequestParameter('targetlangs') && 1 !== intval($oConfig->getRequestParameter('nofilter'))) {
@@ -70,12 +83,13 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
                 $sCatId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote(
                     \OxidEsales\Eshop\Core\Registry::getConfig()->getRequestParameter('catid')
                 );
-                $sQAdd = " from $sArticleTable
+                $sQAdd = " FROM $sArticleTable
                     LEFT JOIN $sJoinTable
                     ON $sJoinTable.OXARTICLEID = $sArticleTable.OXID AND $sJoinTable.PROJECT_ID = $sProjectId
                     INNER JOIN $sCategoryTable
                     ON $sCategoryTable.OXOBJECTID = $sArticleTable.OXID AND $sCategoryTable.OXCATNID = $sCatId
                     $sJoins
+                    $sShopJoin
                     WHERE $sJoinTable.OXID IS NULL";
             } else {
                 // No category is selected.
@@ -85,8 +99,6 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
                     $sJoins
                     WHERE $sJoinTable.OXID IS NULL";
             }
-
-
 
         } else {
             $sQAdd = " from $sArticleTable

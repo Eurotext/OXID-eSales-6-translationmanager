@@ -41,10 +41,24 @@ class AttributesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\A
         $sContainerName = $oConfig->getRequestParameter('cmpid');
         $sProjectId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oConfig->getRequestParameter('projectid'));
 
+        $oShop = \OxidEsales\Eshop\Core\Registry::getConfig()->getActiveShop();
+        $oShopId = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote($oShop->getId());
+
+        $sAttribute2ShopTable = $this->_getViewName('oxattribute2shop');
+        $bIsMulti = isset($oShop->oxshops__oxismultishop) ? ((bool) $oShop->oxshops__oxismultishop->value) : false;
+        //$bIsSub = isset($oShop->oxshops__oxissubshop) ? ((bool) $oShop->oxshops__oxissubshop->value) : false;
+
+        if (!$bIsMulti) {
+            $sShopJoin = "JOIN $sAttribute2ShopTable ON $sAttribute2ShopTable.OXMAPOBJECTID = $sAttributeTable.OXMAPID AND $sAttribute2ShopTable.OXSHOPID = $oShopId ";
+        } else {
+            $sShopJoin = "";
+        }
+
         if ('container1' === $sContainerName) {
             $sQAdd = " from $sAttributeTable
                 LEFT JOIN $sJoinTable
                 ON $sJoinTable.OXATTRIBUTEID = $sAttributeTable.OXID AND $sJoinTable.PROJECT_ID = $sProjectId
+                $sShopJoin
                 WHERE $sJoinTable.OXID IS NULL";
         } else {
             $sQAdd = " from $sAttributeTable
