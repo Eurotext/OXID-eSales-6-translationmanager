@@ -17,16 +17,16 @@ class AttributesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\A
      *
      * @var array
      */
-    protected $_aColumns = array(
-        'container1' => array(
-            array('oxtitle', 'oxattribute', 1, 1, 0),
-            array('oxid', 'oxattribute', 0, 0, 1),
-        ),
-        'container2' => array(
-            array('oxtitle', 'oxattribute', 1, 1, 0),
-            array('oxid', 'oxattribute', 0, 0, 1),
-        ),
-    );
+    protected $_aColumns = [
+        'container1' => [
+            ['oxtitle', 'oxattribute', 1, 1, 0],
+            ['oxid', 'oxattribute', 0, 0, 1],
+        ],
+        'container2' => [
+            ['oxtitle', 'oxattribute', 1, 1, 0],
+            ['oxid', 'oxattribute', 0, 0, 1],
+        ],
+    ];
 
     /**
      * Empty function, developer should override this method according requirements
@@ -89,10 +89,10 @@ class AttributesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\A
         foreach ($aAttributes as $sAttributeId) {
             $oProjectToAttribute = oxNew('\Eurotext\Translationmanager\Model\ProjectToAttribute');
             $oProjectToAttribute->assign(
-                array(
+                [
                     'ettm_project2attribute__project_id' => $sProjectId,
                     'ettm_project2attribute__oxattributeid' => $sAttributeId,
-                )
+                ]
             );
             $oProjectToAttribute->save();
         }

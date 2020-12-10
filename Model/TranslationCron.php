@@ -20,7 +20,7 @@ class TranslationCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     public function execute()
     {
         // 1. Query all project with status 50
-        $aProjects = array();
+        $aProjects = [];
         $this->_queryProjects($aProjects);
 
         // 2. Update heir status
@@ -36,7 +36,7 @@ class TranslationCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         $sTable = 'ettm_project';
         $sProjectQuery = "SELECT * FROM $sTable WHERE $sTable.STATUS = 50";
-        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sProjectQuery, array());
+        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sProjectQuery, []);
 
         if ($oRs !== false && $oRs->count() > 0) {
             while (!$oRs->EOF) {

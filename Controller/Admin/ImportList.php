@@ -37,7 +37,7 @@ class ImportList extends \OxidEsales\Eshop\Application\Controller\Admin\AdminLis
         $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
         $languages = $oLang->getLanguageArray();
 
-        $aEttmLanguages = array();
+        $aEttmLanguages = [];
         foreach ($languages as $language) {
             $aEttmLanguages[$language->abbr] = $language->name;
         }

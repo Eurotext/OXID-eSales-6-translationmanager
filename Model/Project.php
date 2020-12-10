@@ -88,28 +88,28 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $sUri = $this->_sUriBase . '/' . $projectExternalId . '.json';
 
         // Set headers
-        $aHeaders = array(
+        $aHeaders = [
             'Content-Type' => 'application/json',
             'apikey' => $this->_sApiKey,
             'X-Name' => $projectName
-        );
+        ];
 
         $oClient = new \GuzzleHttp\Client([
             'base_uri' => $this->_sUriBaseFull . 'project/',
             'timeout'  => 6.0,
         ]);
 
-        $aBody = array(
+        $aBody = [
             'description' => '',
-        );
+        ];
 
         try {
             $oResponse = $oClient->patch(
                 $projectExternalId . '.json',
-                array(
+                [
                     'headers' => $aHeaders,
                     'json' => $aBody,
-                )
+                ]
             );
 
         } catch (\Exception $e) {
@@ -128,11 +128,11 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $projectExternalId = $this->ettm_project__external_id->rawValue;
 
         // Set headers
-        $aHeaders = array(
+        $aHeaders = [
             'Content-Type' => 'application/json',
             'apikey' => $this->_sApiKey,
             'X-Item-Status' => 'new',
-        );
+        ];
 
         $oClient = new \GuzzleHttp\Client([
             'base_uri' => $this->_sUriBaseFull . 'transition/project/',
@@ -142,17 +142,17 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         try {
             $oResponse = $oClient->patch(
                 $projectExternalId . '.json',
-                array(
+                [
                     'headers' => $aHeaders
-                )
+                ]
             );
             $aResponse = json_decode($oResponse->getBody()->getContents(), false);
             $sExternalId = $aResponse->id;
 
             $this->assign(
-                array(
+                [
                     'ettm_project__status' => 50,
-                )
+                ]
             );
 
             $this->save();
@@ -173,37 +173,37 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $projectName = $this->ettm_project__name->rawValue;
 
         // Set headers
-        $aHeaders = array(
+        $aHeaders = [
             'Content-Type' => 'application/json',
             'apikey' => $this->_sApiKey,
             'X-Type' => 'quote',
             'X-Name' => $projectName
-        );
+        ];
 
         $oClient = new \GuzzleHttp\Client([
             'base_uri' => $this->_sUriBaseFull,
             'timeout'  => 6.0,
         ]);
 
-        $aBody = array(
+        $aBody = [
             'description' => '',
-        );
+        ];
 
         try {
             $oResponse = $oClient->post(
                 'project.json',
-                array(
+                [
                     'headers' => $aHeaders,
                     'json' => $aBody,
-                )
+                ]
             );
             $aResponse = json_decode($oResponse->getBody()->getContents(), false);
             $sExternalId = $aResponse->id;
 
             $this->assign(
-                array(
+                [
                     'ettm_project__external_id' => $sExternalId,
-                )
+                ]
             );
 
             $this->save();
@@ -247,10 +247,10 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $projectExternalId = $oProject->ettm_project__external_id->rawValue;
 
         // Set headers
-        $aHeaders = array(
+        $aHeaders = [
             'Content-Type' => 'application/json',
             'apikey' => $this->_sApiKey,
-        );
+        ];
 
         $oClient = new \GuzzleHttp\Client([
             'base_uri' => $this->_sUriBaseFull . 'project/',
@@ -260,9 +260,9 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         try {
             $oResponse = $oClient->delete(
                 $projectExternalId . '.json',
-                array(
+                [
                     'headers' => $aHeaders
-                )
+                ]
             );
 
         } catch (\Exception $e) {
@@ -272,19 +272,19 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         //Delte child elements
         \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
             "DELETE FROM `ettm_project2article` WHERE PROJECT_ID = ?",
-            array($sOxId)
+            [$sOxId]
         );
         \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
             "DELETE FROM `ettm_project2attribute` WHERE PROJECT_ID = ?",
-            array($sOxId)
+            [$sOxId]
         );
         \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
             "DELETE FROM `ettm_project2category` WHERE PROJECT_ID = ?",
-            array($sOxId)
+            [$sOxId]
         );
         \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
             "DELETE FROM `ettm_project2cms` WHERE PROJECT_ID = ?",
-            array($sOxId)
+            [$sOxId]
         );
 
         return;
@@ -302,10 +302,10 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $this->load($this->getId());
 
         // Set headers
-        $aHeaders = array(
+        $aHeaders = [
             'Content-Type' => 'application/json',
             'apikey' => $this->_sApiKey,
-        );
+        ];
 
         $oClient = new \GuzzleHttp\Client([
             'base_uri' => $this->_sUriBaseFull . 'project/',
@@ -319,9 +319,9 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         try {
             $oResponse = $oClient->get(
                 $projectExternalId . '.json',
-                array(
+                [
                     'headers' => $aHeaders
-                )
+                ]
             );
             $aResponse = json_decode($oResponse->getBody()->getContents(), true);
 
@@ -339,11 +339,11 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
 
         // 3. Save total, finished and percent
         $percentageFinished = (int)(((float)$finishedCount / (float)$totalCount) * 100.0);
-        $aParams = array(
+        $aParams = [
             'ettm_project__total_items' => $totalCount,
             'ettm_project__finished_items' => $finishedCount,
             'ettm_project__percent_finished' => $percentageFinished,
-        );
+        ];
 
         if (100 === $percentageFinished) {
             $aParams['ettm_project__total_items'] = 0;
@@ -383,24 +383,24 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $sExternalId = $this->ettm_project__external_id->rawValue;
 
         // Get all items from remote.
-        $aHeaders = array(
+        $aHeaders = [
             'Content-Type' => 'application/json',
             'apikey' => $this->_sApiKey,
-        );
+        ];
 
         $oClient = new \GuzzleHttp\Client([
             'base_uri' => $this->_sUriBaseFull . 'project/',
             'timeout'  => 4.0,
         ]);
 
-        $aItems = array();
+        $aItems = [];
 
         try {
             $oResponse = $oClient->get(
                 $sExternalId . '.json',
-                array(
+                [
                     'headers' => $aHeaders
-                )
+                ]
             );
             $aResponse = json_decode($oResponse->getBody()->getContents(), true);
 
@@ -412,11 +412,11 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         // Create a marker for each in local database.
         foreach ($aItems as $sItemId => $aItem) {
             $oImportJob = oxNew('\Eurotext\Translationmanager\Model\ImportJob');
-            $oImportJob->assign(array(
+            $oImportJob->assign([
                 'ettm_importjobs__project_id' => $sId,
                 'ettm_importjobs__external_id' => $sItemId,
                 'ettm_importjobs__external_project_id' => $sExternalId,
-            ));
+            ]);
             $oImportJob->save();
         }
 
@@ -443,7 +443,7 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $iCmsCount = $oProjectToCms->countItemsForProject($this->getId());
         $iTotalCount = $iAttributesCount + $iArticlesCount + $iCategoriesCount + $iCmsCount;
 
-        $aParams = array();
+        $aParams = [];
         if (0 < $iTotalCount) {
             $aParams['ettm_project__status'] = 20;
         } else {
@@ -469,16 +469,16 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $sJoinTable = 'ettm_importjobs';
 
         $sCountConnections = "SELECT COUNT(*) FROM $sJoinTable WHERE PROJECT_ID = ?";
-        $result = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sCountConnections, array($sProjectId));
+        $result = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sCountConnections, [$sProjectId]);
         $iTotalCount = (int)$result->fields[0];
 
         $sCountFinishedConnections = "SELECT COUNT(*) FROM $sJoinTable WHERE PROJECT_ID = ? AND STATUS = 10";
-        $result = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sCountFinishedConnections, array($sProjectId));
+        $result = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sCountFinishedConnections, [$sProjectId]);
         $iFinishedTotalCount = (int)$result->fields[0];
 
 
         // Counters
-        $aParams = array();
+        $aParams = [];
         $percentageFinished = (int)(((float)$iFinishedTotalCount / (float)$iTotalCount) * 100.0);
         $aParams['ettm_project__total_items'] = $iTotalCount;
         $aParams['ettm_project__finished_items'] = $iFinishedTotalCount;
@@ -525,7 +525,7 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         $iFinishedTotalCount = $iFinishedAttributesCount + $iFinishedArticlesCount + $iFinishedCategoriesCount + $iFinishedCmsCount;
 
         // Counters
-        $aParams = array();
+        $aParams = [];
         $percentageFinished = (int)(((float)$iFinishedTotalCount / (float)$iTotalCount) * 100.0);
         $aParams['ettm_project__total_items'] = $iTotalCount;
         $aParams['ettm_project__finished_items'] = $iFinishedTotalCount;
@@ -553,7 +553,7 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
         UNION ALL
         SELECT SUM(SKIPPED) AS SKIPPED, SUM(TRANSMITTED) AS TRANSMITTED, SUM(FAILED) AS FAILED FROM ettm_project2article WHERE PROJECT_ID = ? AND STATUS = 10
         ) AS t";
-        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, array($this->getId(), $this->getId(), $this->getId(), $this->getId()));
+        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, [$this->getId(), $this->getId(), $this->getId(), $this->getId()]);
         if ($oRs !== false && $oRs->count() > 0) {
             $aParams['ettm_project__transmitted'] = $oRs->fields['TRANSMITTED'];
             $aParams['ettm_project__skipped'] = $oRs->fields['SKIPPED'];

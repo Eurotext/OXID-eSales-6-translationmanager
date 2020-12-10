@@ -32,7 +32,7 @@ class ArticlesSelectionMain extends \OxidEsales\Eshop\Application\Controller\Adm
         $this->_getCategoryTree('artcattree', '', '', false, $iShopId);
 
         // Selected target languages
-        $this->_aViewData['editlangs'] = array();
+        $this->_aViewData['editlangs'] = [];
 
         $sOxId = $this->getEditObjectId();
         if (isset($sOxId) && (-1 !== intval($sOxId))) {
@@ -44,12 +44,12 @@ class ArticlesSelectionMain extends \OxidEsales\Eshop\Application\Controller\Adm
 
             $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
             $aLanguages = $oLang->getLanguageArray();
-            $aRetArray = array();
+            $aRetArray = [];
             foreach ($aLanguages as $aLanguage) {
                 $aRetArray[$aLanguage->abbr] = $aLanguage->id;
             }
 
-            $newLang = array();
+            $newLang = [];
             foreach ($langs as $lang) {
                 $newLang[] = $aRetArray[$lang];
             }
@@ -73,32 +73,32 @@ class ArticlesSelectionMain extends \OxidEsales\Eshop\Application\Controller\Adm
         $aColumns = $oAjaxHandler->getColumns();
         $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
 
-        $aJSONHeaders = array(
-            'container1' => array(),
-            'container2' => array(),
-        );
+        $aJSONHeaders = [
+            'container1' => [],
+            'container2' => [],
+        ];
 
 
         foreach ($aColumns['container1'] as $index => $aColumn) {
             $sCode = 'ETTM_AJAX_' . strtoupper($aColumn[0]);
-            $aJSONHeaders['container1'][] = array(
+            $aJSONHeaders['container1'][] = [
                 'key' => '_' . $index,
                 'ident' => (1 === $aColumn[4]) ? true : false,
                 'label' => $oLang->translateString($sCode, $oLang->getBaseLanguage(), true),
                 'visible' => (1 === $aColumn[2]) ? true : false,
                 'sortable' => true,
-            );
+            ];
         }
 
         foreach ($aColumns['container2'] as $index => $aColumn) {
             $sCode = 'ETTM_AJAX_' . strtoupper($aColumn[0]);
-            $aJSONHeaders['container2'][] = array(
+            $aJSONHeaders['container2'][] = [
                 'key' => '_' . $index,
                 'ident' => (1 === $aColumn[4]) ? true : false,
                 'label' => $oLang->translateString($sCode, $oLang->getBaseLanguage(), true),
                 'visible' => (1 === $aColumn[2]) ? true : false,
                 'sortable' => true,
-            );
+            ];
         }
 
         return $aJSONHeaders;

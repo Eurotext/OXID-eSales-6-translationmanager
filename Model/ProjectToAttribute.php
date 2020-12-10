@@ -42,7 +42,7 @@ class ProjectToAttribute extends \OxidEsales\Eshop\Core\Model\BaseModel
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
         $sJoinTable = getViewName('ettm_project2attribute', \OxidEsales\Eshop\Core\Registry::getConfig()->getRequestParameter('editlanguage'));
         $sCountConnections = "SELECT COUNT(*) FROM $sJoinTable WHERE $sJoinTable.PROJECT_ID = ?";
-        $result = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sCountConnections, array($sProjectId));
+        $result = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sCountConnections, [$sProjectId]);
         return (int)$result->fields[0];
     }
 
@@ -59,7 +59,7 @@ class ProjectToAttribute extends \OxidEsales\Eshop\Core\Model\BaseModel
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
         $sJoinTable = getViewName('ettm_project2attribute', \OxidEsales\Eshop\Core\Registry::getConfig()->getRequestParameter('editlanguage'));
         $sCountConnections = "SELECT COUNT(*) FROM $sJoinTable WHERE $sJoinTable.PROJECT_ID = ? AND $sJoinTable.STATUS > 0";
-        $result = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sCountConnections, array($sProjectId));
+        $result = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sCountConnections, [$sProjectId]);
         return (int)$result->fields[0];
     }
 }

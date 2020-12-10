@@ -24,7 +24,7 @@ class ImportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
      *
      * @var array
      */
-    private $_aLanguageList = array();
+    private $_aLanguageList = [];
 
     /**
      * Executes parent method parent::render()
@@ -43,7 +43,7 @@ class ImportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
             $this->_aViewData['edit'] = $oProject;
 
             $langs = unserialize($oProject->ettm_project__lang_target->rawValue);
-            $newLang = array();
+            $newLang = [];
             foreach ($langs as $lang) {
                 $newLang[] = (object) $lang;
             }
@@ -53,7 +53,7 @@ class ImportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
             $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
             $languages = $oLang->getLanguageArray();
 
-            $aEttmLanguages = array();
+            $aEttmLanguages = [];
             foreach ($languages as $language) {
                 $aEttmLanguages[$language->abbr] = $language->name;
             }
@@ -64,7 +64,7 @@ class ImportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
             $this->_aViewData['readonly'] = true;
 
         } else {
-            $this->_aViewData['editlangs'] = array();
+            $this->_aViewData['editlangs'] = [];
         }
 
         return $this->_sThisTemplate;
@@ -100,7 +100,7 @@ class ImportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         }
         $oProject->loadImportItems();
         $oProject->updateImportProgress();
-        $oProject->assign(array('ettm_project__status' => 70));
+        $oProject->assign(['ettm_project__status' => 70]);
         $oProject->save();
 
         $this->_aViewData['updatelist'] = 1;

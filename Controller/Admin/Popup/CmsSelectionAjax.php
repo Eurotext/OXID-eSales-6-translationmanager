@@ -17,22 +17,22 @@ class CmsSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Admin\Li
      *
      * @var array
      */
-    protected $_aColumns = array(
-        'container1' => array(
-            array('oxloadid', 'oxcontents', 1, 0, 0),
-            array('oxtitle', 'oxcontents', 1, 1, 0),
-            array('oxactive', 'oxcontents', 1, 0, 0),
-            array('oxshopid', 'oxcontents', 1, 0, 0),
-            array('oxid', 'oxcontents', 0, 0, 1),
-        ),
-        'container2' => array(
-            array('oxloadid', 'oxcontents', 1, 0, 0),
-            array('oxtitle', 'oxcontents', 1, 1, 0),
-            array('oxactive', 'oxcontents', 1, 0, 0),
-            array('oxshopid', 'oxcontents', 1, 0, 0),
-            array('oxid', 'oxcontents', 0, 0, 1),
-        ),
-    );
+    protected $_aColumns = [
+        'container1' => [
+            ['oxloadid', 'oxcontents', 1, 0, 0],
+            ['oxtitle', 'oxcontents', 1, 1, 0],
+            ['oxactive', 'oxcontents', 1, 0, 0],
+            ['oxshopid', 'oxcontents', 1, 0, 0],
+            ['oxid', 'oxcontents', 0, 0, 1],
+        ],
+        'container2' => [
+            ['oxloadid', 'oxcontents', 1, 0, 0],
+            ['oxtitle', 'oxcontents', 1, 1, 0],
+            ['oxactive', 'oxcontents', 1, 0, 0],
+            ['oxshopid', 'oxcontents', 1, 0, 0],
+            ['oxid', 'oxcontents', 0, 0, 1],
+        ],
+    ];
 
     /**
      * Empty function, developer should override this method according requirements
@@ -94,10 +94,10 @@ class CmsSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Admin\Li
         foreach ($aCMS as $sCMSOXID) {
             $oProjectToCMS = oxNew('\Eurotext\Translationmanager\Model\ProjectToCms');
             $oProjectToCMS->assign(
-                array(
+                [
                     'ettm_project2cms__project_id' => $sProjectId,
                     'ettm_project2cms__oxcmsid' => $sCMSOXID,
-                )
+                ]
             );
             $oProjectToCMS->save();
         }

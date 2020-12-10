@@ -20,7 +20,7 @@ class Mapping
      *
      * @var array
      */
-    protected $_aDefaultLangArray = array(
+    protected $_aDefaultLangArray = [
         "de-de" => 'GERMAN_DE',
         "en-gb" => 'ENGLISH_GB',
         "en-us" => 'ENGLISH_US',
@@ -105,7 +105,7 @@ class Mapping
         "vn"    => 'VIETNAMESE',
         "wel"   => 'WELSH',
         "be"    => 'BYELORUSSIAN',
-    );
+    ];
 
     /**
      * Return selected mapping.
@@ -118,7 +118,7 @@ class Mapping
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
         $sShopId = $oConfig->getShopId();
         $languages = $oLang->getLanguageArray();
-        $mapping = array();
+        $mapping = [];
 
         foreach ($languages as $language) {
             // $language->abbr -- gives us short name of language, like "de"
@@ -140,7 +140,7 @@ class Mapping
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
         $sShopId = $oConfig->getShopId();
         $languages = $oLang->getLanguageArray();
-        $mapping = array();
+        $mapping = [];
 
         foreach ($languages as $language) {
             // $language->abbr -- gives us short name of language, like "de"

@@ -34,7 +34,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         echo '<h2>Projektobjekte vorbereiten</h2>';
 
         // 1. Query all project with status 30
-        $aProjects = array();
+        $aProjects = [];
         $this->_queryProjects($aProjects);
         echo '<pre>';
         print_r($aProjects);
@@ -209,7 +209,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             // Execute.
             \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
                 $sql,
-                array()
+                []
             );
         }
     }
@@ -262,10 +262,10 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                         if ($bExport) {
                             // 2. Send them to remote.
                             $uri = '/api/v1/project/' . $sExternalProjectId . '/item.json';
-                            $headers = array(
+                            $headers = [
                                 'Content-Type' => 'application/json',
                                 'apikey' => $sAPIKEY,
-                            );
+                            ];
                             $client = new \GuzzleHttp\Client([
                                 'base_uri' => $sSERVICEURL,
                                 'timeout'  => 2.0,
@@ -276,10 +276,10 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                                 $headers['X-TextType'] = $sItemtype;
                                 $client->post(
                                     $uri,
-                                    array(
+                                    [
                                         'headers' => $headers,
                                         'json' => $aExportableArray,
-                                    )
+                                    ]
                                 );
                                 $iTransmitted = 1;
                                 $iFailed = 0;
@@ -310,14 +310,14 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                             $iWasTransmitted = ($iExportable && $iTransmitted)?1:0;
                             $iWasFailed = ($iExportable && $iFailed)?1:0;
 
-                            $sUpdatedExportItems[$aUnderItem['__meta']['export_item_table']][] = array(
+                            $sUpdatedExportItems[$aUnderItem['__meta']['export_item_table']][] = [
                                 $aUnderItem['__meta']['project_item_id'],
                                 10,
                                 $iExportable,
                                 $iSkip,
                                 $iWasTransmitted,
                                 $iWasFailed,
-                            );
+                            ];
                         }
                     }
                 }
@@ -348,7 +348,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         }
 
         $maxExports = intval($oConfig->getShopConfVar('sEXPORTJOBIPJ', $iShopId, 'module:translationmanager6'));
-        $aExportableItems = array();
+        $aExportableItems = [];
         $aLangMapping = $this->_getLangCodesMapping();
         // Exportable fields setting.
         $aItemFields = $oConfig->getShopConfVar($settingName, $iShopId, 'module:translationmanager6');
@@ -393,7 +393,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                 LIMIT {$iMaxExports}
             ";
 
-            $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, array($aProject['OXID']));
+            $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, [$aProject['OXID']]);
 
             if ($oRs !== false && $oRs->count() > 0) {
                 while (!$oRs->EOF) {
@@ -410,7 +410,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                 unset($aExportableItem[$idFieldName]);
                 $type = $aExportableItem['type'];
                 unset($aExportableItem['type']);
-                $translations = array();
+                $translations = [];
                 foreach ($aTargetLangs as $aTargetLang) {
                     $translations[$aTargetLang] = intval($aExportableItem['translated_'.$aTargetLang]);
                     unset($aExportableItem['translated_'.$aTargetLang]);
@@ -418,8 +418,8 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
 
                 foreach ($aTargetLangs as $aTargetLang) {
                     $aProject['ITEMS'][$sOriginLang][$aTargetLang][$type][] = array_merge(
-                        array(
-                            '__meta' => array(
+                        [
+                            '__meta' => [
                                 'project_item_id' =>  $id,
                                 'export_item_table' => $joinTableName,
                                 'oxid_item_id' => $oxid,
@@ -427,8 +427,8 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                                 'oxid_item_table' => $viewName,
                                 'target_lang' => $aTargetLang,
                                 'skip' => ($bOnlyTranslated && (1 === $translations[$aTargetLang])) ? 1 : 0
-                            )
-                        ),
+                            ]
+                        ],
                         $aExportableItem
                     );
                 }
@@ -469,7 +469,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
         $aLanguages = $oLang->getLanguageArray();
-        $aRetArray = array();
+        $aRetArray = [];
         foreach ($aLanguages as $aLanguage) {
             $aRetArray[$aLanguage->oxid] = $aLanguage->id;
         }
@@ -485,7 +485,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
         $aLanguages = $oLang->getLanguageArray();
-        $aRetArray = array();
+        $aRetArray = [];
         foreach ($aLanguages as $aLanguage) {
             $aRetArray[$aLanguage->id] = $aLanguage->oxid;
         }
@@ -513,23 +513,23 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         $sTable = 'ettm_project';
         $sProjectQuery = "SELECT * FROM $sTable WHERE $sTable.STATUS = 30";
-        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sProjectQuery, array());
+        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sProjectQuery, []);
 
         if ($oRs !== false && $oRs->count() > 0) {
             while (!$oRs->EOF) {
                 $aProject = $oRs->fields;
                 $aProject['DIRTY'] = false; // set to true, if any item in this project has been exported.
                 $aProject['skipped'] = 0;
-                $aProject['ITEMS'] = array();
-                $aProject['ITEMS'][$aProject['LANG_ORIGIN']] = array();
+                $aProject['ITEMS'] = [];
+                $aProject['ITEMS'][$aProject['LANG_ORIGIN']] = [];
                 $aTargetLangs = unserialize($aProject['LANG_TARGET']);
                 foreach ($aTargetLangs as $aTargetLang) {
-                    $aProject['ITEMS'][$aProject['LANG_ORIGIN']][$aTargetLang] = array(
-                        'specialized-text' => array(),
-                        'marketing' => array(),
-                        'term' => array(),
-                        'product' => array()
-                    );
+                    $aProject['ITEMS'][$aProject['LANG_ORIGIN']][$aTargetLang] = [
+                        'specialized-text' => [],
+                        'marketing' => [],
+                        'term' => [],
+                        'product' => []
+                    ];
                 }
                 $aProjects[] = $aProject;
                 $oRs->fetchRow();

@@ -24,7 +24,7 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
      *
      * @var array
      */
-    private $_aLanguageList = array();
+    private $_aLanguageList = [];
 
     /**
      * Executes parent method parent::render()
@@ -48,7 +48,7 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         // List available languages
         $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
         $languages = $oLang->getLanguageArray();
-        $aEttmLanguages = array();
+        $aEttmLanguages = [];
         foreach ($languages as $language) {
             $aEttmLanguages[$language->abbr] = $language->name;
         }
@@ -56,7 +56,7 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         $this->_aViewData['ettmoriglaguages'] = $aEttmLanguages;
 
         // Selected target languages
-        $this->_aViewData['editlangs'] = array();
+        $this->_aViewData['editlangs'] = [];
 
         if (isset($sOxId) && (-1 !== intval($sOxId))) {
             // load object
@@ -65,7 +65,7 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
             $this->_aViewData['edit'] = $oProject;
 
             $langs = unserialize($oProject->ettm_project__lang_target->rawValue);
-            $newLang = array();
+            $newLang = [];
             foreach ($langs as $lang) {
                 $newLang[] = (object) $lang;
             }
@@ -131,7 +131,7 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
 
         $aParams['ettm_project__status'] = 10;
 
-        $aLanguages = array();
+        $aLanguages = [];
         foreach ($aLangParams as $sGivenLanguage) {
             if (!in_array($sGivenLanguage, $aLanguages)) {
                 $aLanguages[] = $sGivenLanguage;
@@ -196,16 +196,16 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         }
 
         $oProject->updateExportProgress();
-        $oProject->assign(array('ettm_project__status' => 30));
+        $oProject->assign(['ettm_project__status' => 30]);
 
         // If checkbox selected
         if (isset($aParams['ettm_project__only_untranslated']) && 1 === intval($aParams['ettm_project__only_untranslated'])) {
-            $oProject->assign(array('ettm_project__only_untranslated' => 1));
+            $oProject->assign(['ettm_project__only_untranslated' => 1]);
         }
 
         // If start translations right after export is finished.
         if (isset($aParams['ettm_project__start_after_export']) && 1 === intval($aParams['ettm_project__start_after_export'])) {
-            $oProject->assign(array('ettm_project__start_after_export' => 1));
+            $oProject->assign(['ettm_project__start_after_export' => 1]);
         }
 
         $oProject->save();

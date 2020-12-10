@@ -28,13 +28,13 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         }
         $maxImports = intval($oConfig->getShopConfVar('sIMPORTJOBIPJ', $iShopId, 'module:translationmanager6'));
 
-        $aUpdateProjects = array();
+        $aUpdateProjects = [];
         echo '<h1>Importablauf</h1>';
 
         // 1. Query all untouched jobs
 
         echo '<h2>Import-JOBS vorbereiten</h2>';
-        $aJobs = array();
+        $aJobs = [];
         $this->_queryJobs($aJobs, $maxImports);
         echo '<pre>';
         print_r($aJobs);
@@ -86,7 +86,7 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
         $aLanguages = $oLang->getLanguageArray();
-        $aRetArray = array();
+        $aRetArray = [];
         foreach ($aLanguages as $aLanguage) {
             $aRetArray[$aLanguage->oxid] = $aLanguage->id;
         }
@@ -136,13 +136,13 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
 
             $aData = $aItem;
 
-            $aUpdateFields = array();
-            $aParams = array();
+            $aUpdateFields = [];
+            $aParams = [];
             if (0 === count($aData)) {
                 // 2. Mark job as done with error
                 \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
                     "UPDATE `ettm_importjobs` SET STATUS=10 WHERE OXID = ?",
-                    array($aJob['OXID'])
+                    [$aJob['OXID']]
                 );
                 // 3. Add project for status update
                 $sProjectId = $aJob['PROJECT_ID'];
@@ -177,7 +177,7 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             // 2. Mark job as done
             \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
                 "UPDATE `ettm_importjobs` SET STATUS=10 WHERE OXID = ?",
-                array($aJob['OXID'])
+                [$aJob['OXID']]
             );
 
             // 3. Add project for status update
@@ -210,10 +210,10 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         $iExternalItemId = $aJob['EXTERNAL_ID'];
 
         $uri = '/api/v1/project/' . $iExternalProjectid . '/item/' . $iExternalItemId . '.json';
-        $headers = array(
+        $headers = [
             'Content-Type' => 'application/json',
             'apikey' => $sAPIKEY,
-        );
+        ];
         $client = new \GuzzleHttp\Client([
             'base_uri' => $sSERVICEURL,
             'timeout'  => 2.0,
@@ -222,9 +222,9 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         try {
             $oResponse = $client->get(
                 $uri,
-                array(
+                [
                     'headers' => $headers
-                )
+                ]
             );
             $aJobs[$index]['BODY'] = json_decode($oResponse->getBody(), true);
             $aJobs[$index]['HEADERS'] = $oResponse->getHeaders();
@@ -244,7 +244,7 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         $oLang = \OxidEsales\Eshop\Core\Registry::getLang();
         $aLanguages = $oLang->getLanguageArray();
-        $aRetArray = array();
+        $aRetArray = [];
         foreach ($aLanguages as $aLanguage) {
             $aRetArray[$aLanguage->id] = $aLanguage->oxid;
         }
@@ -261,7 +261,7 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
     {
         $sTable = 'ettm_importjobs';
         $sQuery = "SELECT * FROM $sTable WHERE $sTable.STATUS = 0 LIMIT $maxImports";
-        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, array());
+        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, []);
 
         if ($oRs !== false && $oRs->count() > 0) {
             while (!$oRs->EOF) {

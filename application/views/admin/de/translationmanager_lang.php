@@ -3,7 +3,7 @@ $sLangName  = "Deutsch";
 // -------------------------------
 // RESOURCE IDENTITFIER = STRING
 // -------------------------------
-$aLang = array(
+$aLang = [
     'charset'                                   => 'UTF-8',
     'TOOLTIPS_NEW_EUROTEXT_EXPORT_PROJECT' => 'Neues Projekt',
     'TOOLTIPS_SUPPORT_EUROTEXT_EXPORT_BOTTOM' => 'Support',
@@ -448,4 +448,4 @@ $aLang = array(
     'Vietnam'                          => 'Vietnam',
     'Central_African_Republic'         => 'Zentralafrikanische Republik',
     'Cyprus'                           => 'Zypern',
-);
+];

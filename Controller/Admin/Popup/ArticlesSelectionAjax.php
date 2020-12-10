@@ -17,26 +17,26 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
      *
      * @var array
      */
-    protected $_aColumns = array(
-        'container1' => array(
-            array('oxartnum', 'oxarticles', 1, 0, 0),
-            array('oxtitle', 'oxarticles', 1, 1, 0),
-            array('oxean', 'oxarticles', 1, 0, 0),
-            array('oxmpn', 'oxarticles', 0, 0, 0),
-            array('oxprice', 'oxarticles', 0, 0, 0),
-            array('oxstock', 'oxarticles', 0, 0, 0),
-            array('oxid', 'oxarticles', 0, 0, 1),
-        ),
-        'container2' => array(
-            array('oxartnum', 'oxarticles', 1, 0, 0),
-            array('oxtitle', 'oxarticles', 1, 1, 0),
-            array('oxean', 'oxarticles', 1, 0, 0),
-            array('oxmpn', 'oxarticles', 0, 0, 0),
-            array('oxprice', 'oxarticles', 0, 0, 0),
-            array('oxstock', 'oxarticles', 0, 0, 0),
-            array('oxid', 'oxarticles', 0, 0, 1),
-        )
-    );
+    protected $_aColumns = [
+        'container1' => [
+            ['oxartnum', 'oxarticles', 1, 0, 0],
+            ['oxtitle', 'oxarticles', 1, 1, 0],
+            ['oxean', 'oxarticles', 1, 0, 0],
+            ['oxmpn', 'oxarticles', 0, 0, 0],
+            ['oxprice', 'oxarticles', 0, 0, 0],
+            ['oxstock', 'oxarticles', 0, 0, 0],
+            ['oxid', 'oxarticles', 0, 0, 1],
+        ],
+        'container2' => [
+            ['oxartnum', 'oxarticles', 1, 0, 0],
+            ['oxtitle', 'oxarticles', 1, 1, 0],
+            ['oxean', 'oxarticles', 1, 0, 0],
+            ['oxmpn', 'oxarticles', 0, 0, 0],
+            ['oxprice', 'oxarticles', 0, 0, 0],
+            ['oxstock', 'oxarticles', 0, 0, 0],
+            ['oxid', 'oxarticles', 0, 0, 1],
+        ]
+    ];
 
     /**
      * Empty function, developer should override this method according requirements
@@ -129,10 +129,10 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
         foreach ($aArticles as $sArticleID) {
             $oProjectToCMS = oxNew('\Eurotext\Translationmanager\Model\ProjectToArticle');
             $oProjectToCMS->assign(
-                array(
+                [
                     'ettm_project2article__project_id' => $sProjectId,
                     'ettm_project2article__oxarticleid' => $sArticleID,
-                )
+                ]
             );
             $oProjectToCMS->save();
         }

@@ -17,21 +17,21 @@ class CategoriesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\A
      *
      * @var array
      */
-    protected $_aColumns = array(
-        'container1' => array(
-            array('oxtitle', 'oxcategories', 1, 1, 0),
-            array('oxdesc', 'oxcategories', 1, 1, 0),
-            array('oxid', 'oxcategories', 0, 0, 0),
-            array('oxid', 'oxcategories', 0, 0, 1),
-        ),
-        'container2' => array(
-            array('oxtitle', 'oxcategories', 1, 1, 0),
-            array('oxdesc', 'oxcategories', 1, 1, 0),
-            array('oxid', 'oxcategories', 0, 0, 0),
-            array('oxid', 'ettm_project2category', 0, 0, 1),
-            array('oxid', 'oxcategories', 0, 0, 1),
-        ),
-    );
+    protected $_aColumns = [
+        'container1' => [
+            ['oxtitle', 'oxcategories', 1, 1, 0],
+            ['oxdesc', 'oxcategories', 1, 1, 0],
+            ['oxid', 'oxcategories', 0, 0, 0],
+            ['oxid', 'oxcategories', 0, 0, 1],
+        ],
+        'container2' => [
+            ['oxtitle', 'oxcategories', 1, 1, 0],
+            ['oxdesc', 'oxcategories', 1, 1, 0],
+            ['oxid', 'oxcategories', 0, 0, 0],
+            ['oxid', 'ettm_project2category', 0, 0, 1],
+            ['oxid', 'oxcategories', 0, 0, 1],
+        ],
+    ];
 
     /**
      * Empty function, developer should override this method according requirements
@@ -94,10 +94,10 @@ class CategoriesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\A
         foreach ($aItems as $sItemId) {
             $oProjectToCategory = oxNew('\Eurotext\Translationmanager\Model\ProjectToCategory');
             $oProjectToCategory->assign(
-                array(
+                [
                     'ettm_project2category__project_id' => $sProjectId,
                     'ettm_project2category__oxcategoryid' => $sItemId,
-                )
+                ]
             );
             $oProjectToCategory->save();
         }
