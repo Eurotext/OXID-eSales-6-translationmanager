@@ -7,8 +7,6 @@
 [{/if}]
 
 <script type="text/javascript">
-<!--
-
 window.onload = function ()
 {
     top.reloadEditFrame();
@@ -16,7 +14,6 @@ window.onload = function ()
         top.oxid.admin.updateList('[{ $oxid }]');
     [{ /if}]
 }
-//-->
 </script>
 
 <div id="liste">

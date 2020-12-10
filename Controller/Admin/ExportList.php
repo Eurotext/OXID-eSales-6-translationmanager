@@ -54,9 +54,12 @@ class ExportList extends \OxidEsales\Eshop\Application\Controller\Admin\AdminLis
      */
     protected function _prepareWhereQuery($aWhere, $sqlFull)
     {
+        $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
+        $sShopId = $oConfig->getShopId();
+
         $sQ = parent::_prepareWhereQuery($aWhere, $sqlFull);
         $sMainTable = getViewName('ettm_project', \OxidEsales\Eshop\Core\Registry::getConfig()->getRequestParameter('editlanguage'));
-        $sQ .= " AND $sMainTable.STATUS < 60";
+        $sQ .= " AND $sMainTable.STATUS < 60 AND $sMainTable.OXSHOPID = '" . $sShopId . "'";
         return $sQ;
     }
 }

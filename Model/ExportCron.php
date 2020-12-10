@@ -176,7 +176,13 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         $this->_updateProjectsProgress($aProjects);
     }
 
-    protected function _updateStatus($sUpdatedExportItems) {
+    /**
+     * Updates the status of the projekt item.
+     *
+     * @param array $sUpdatedExportItems An array of items to be exported.
+     */
+    protected function _updateStatus($sUpdatedExportItems)
+    {
 
         foreach ($sUpdatedExportItems as $sTableName => $aValues) {
             echo '<pre>';
@@ -184,7 +190,9 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             $sql .= "INSERT INTO `{$sTableName}` ( `OXID`, `STATUS`, `EXPORTABLE`, `SKIPPED`, `TRANSMITTED`, `FAILED` ) VALUES \n";
             $tempArray = [];
             foreach ($aValues as $value) {
-                $filter = function($singleValue){ return '\'' . $singleValue . '\''; };
+                $filter = function ($singleValue) {
+                    return '\'' . $singleValue . '\'';
+                };
                 $filteredValues = array_map($filter, $value);
                 $tempArray[] = '(' . implode(',', $filteredValues) . ')';
             }
@@ -206,7 +214,14 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         }
     }
 
-    protected function _batchExport(&$aProjects, &$sUpdatedExportItems) {
+    /**
+     * Export collected items in batch to eurotext api.
+     *
+     * @param array $aProjects
+     * @param array $sUpdatedExportItems
+     */
+    protected function _batchExport(&$aProjects, &$sUpdatedExportItems)
+    {
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
 
         if (isset($_GET['shopId'])) {
@@ -225,7 +240,6 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             foreach ($aItems as $sOriginLang => $sOriginLangValues) {
                 foreach ($sOriginLangValues as $sTargetLang => $sTargetLangValues) {
                     foreach ($sTargetLangValues as $sItemtype => $aItem) {
-
                         $aProject['DIRTY'] = true;
                         $aProject['DIRTY_status'] = 'status_should_be_updated';
 
@@ -311,7 +325,21 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         }
     }
 
-    protected function _getItems(&$aProjects, $iMaxExports, $viewName, $textType, $settingName, $idFieldName,$translationCheckFieldName, $joinTableName, $joinTableFieldName) {
+    /**
+     * Prepares the items of the project.
+     *
+     * @param array  $aProjects                 Array with projects.
+     * @param int    $iMaxExports               How many exports can be done in the cronjob.
+     * @param string $viewName                  Name of the view table of the item table.
+     * @param string $textType                  What kind of type is the text. that is important for eurotext, to correctly translate it.
+     * @param string $settingName               What fields should be exported.
+     * @param string $idFieldName               What is the name of the column that stores ids.
+     * @param string $translationCheckFieldName In which column to look whether the item is translated.
+     * @param string $joinTableName             What table to join on item table.
+     * @param string $joinTableFieldName        What field to use for join.
+     */
+    protected function _getItems(&$aProjects, $iMaxExports, $viewName, $textType, $settingName, $idFieldName, $translationCheckFieldName, $joinTableName, $joinTableFieldName)
+    {
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
         if (isset($_GET['shopId'])) {
             $iShopId = intval($_GET['shopId']);
@@ -325,7 +353,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         // Exportable fields setting.
         $aItemFields = $oConfig->getShopConfVar($settingName, $iShopId, 'module:translationmanager6');
 
-        foreach($aProjects as &$aProject) {
+        foreach ($aProjects as &$aProject) {
             $sProjectId = $aProject['OXID'];
             $sOriginLang = $aProject['LANG_ORIGIN'];
             $aTargetLangs = unserialize($aProject['LANG_TARGET']);
@@ -368,7 +396,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, array($aProject['OXID']));
 
             if ($oRs !== false && $oRs->count() > 0) {
-                while (!$oRs->EOF ) {
+                while (!$oRs->EOF) {
                     $aExportableItems[] = $oRs->fields;
                     $oRs->fetchRow();
                 }
@@ -495,7 +523,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                 $aProject['ITEMS'] = array();
                 $aProject['ITEMS'][$aProject['LANG_ORIGIN']] = array();
                 $aTargetLangs = unserialize($aProject['LANG_TARGET']);
-                foreach($aTargetLangs as $aTargetLang) {
+                foreach ($aTargetLangs as $aTargetLang) {
                     $aProject['ITEMS'][$aProject['LANG_ORIGIN']][$aTargetLang] = array(
                         'specialized-text' => array(),
                         'marketing' => array(),

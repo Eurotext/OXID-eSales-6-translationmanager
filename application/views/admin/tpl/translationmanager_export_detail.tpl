@@ -51,6 +51,7 @@ function customOpenModal(url) {
         <input type="hidden" name="fnc" value="">
         <input type="hidden" name="oxid" value="[{ $oxid }]">
         <input type="hidden" name="voxid" value="[{ $oxid }]">
+        <input type="hidden" name="currentShopId" value="[{ $currentShopId }]">
         <input type="hidden" name="editval[ettm_project__oxid]" value="[{ $oxid }]">
         <input type="hidden" name="editval[ettm_project__status]" value="[{ $edit->ettm_project__status->value}]">
         <input type="hidden" name="editval[ettm_project__external_id]" value="[{$edit->ettm_project__external_id->value}]">

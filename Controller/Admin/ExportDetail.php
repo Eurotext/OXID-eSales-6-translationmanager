@@ -37,7 +37,12 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         $sOxId = $this->_aViewData['oxid'] = $this->getEditObjectId();
         $this->_aViewData['projectstatus'] = 0;
 
+        $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
+        $this->_aViewData['currentShopId'] = $oConfig->getShopId();
+        $oShop = oxNew(\OxidEsales\Eshop\Application\Model\Shop::class);
+        $oShop->load($oConfig->getShopId());
 
+        $this->_aViewData['isMasterShop'] = (0 === intval($oShop->oxshops__oxparentid->value));
 
         // Current language
         // List available languages
@@ -106,6 +111,9 @@ class ExportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         $sOxId = $this->getEditObjectId();
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
         $aParams = $oConfig->getRequestParameter('editval');
+
+        // Here we get shop id.
+        // TODO: read shop id from a request parameter.
         $aParams['ettm_project__oxshopid'] = $oConfig->getShopId();
         $aLangParams = $oConfig->getRequestParameter('editlangs');
 
