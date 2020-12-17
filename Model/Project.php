@@ -122,7 +122,22 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
     /**
      *
      */
-    public function startTranslation()
+    public function startTranslation() {
+        $this->startTranslationRemote();
+
+        $aParams = [];
+        $aParams['ettm_project__status'] = 50;
+
+        $this->assign($aParams);
+        $return = $this->save();
+
+        return $aParams;
+    }
+
+    /**
+     *
+     */
+    public function startTranslationRemote()
     {
 
         $projectExternalId = $this->ettm_project__external_id->rawValue;
@@ -148,14 +163,6 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
             );
             $aResponse = json_decode($oResponse->getBody()->getContents(), false);
             $sExternalId = $aResponse->id;
-
-            $this->assign(
-                array(
-                    'ettm_project__status' => 50,
-                )
-            );
-
-            $this->save();
 
         } catch (\Exception $e) {
           // Do nothing
@@ -286,6 +293,10 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
             "DELETE FROM `ettm_project2cms` WHERE PROJECT_ID = ?",
             array($sOxId)
         );
+        \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
+            "DELETE FROM `ettm_importjobs` WHERE PROJECT_ID = ?",
+            array($sOxId)
+        );
 
         return;
     }
@@ -350,10 +361,6 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
             $aParams['ettm_project__finished_items'] = 0;
             $aParams['ettm_project__percent_finished'] = 0;
             $aParams['ettm_project__status'] = 60;
-
-            // Load import jobs.
-            $this->loadImportItems();
-            $this->updateImportProgress();
         }
 
         $this->assign($aParams);
@@ -537,7 +544,8 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
             $aParams['ettm_project__percent_finished'] = 0;
 
             if (1 === intval($this->ettm_project__start_after_export->rawValue)) {
-                $this->startTranslation();
+                $this->startTranslationRemote();
+                $aParams['ettm_project__status'] = 50;
             } else {
                 $aParams['ettm_project__status'] = 40;
             }

@@ -35,16 +35,35 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
 
         // 1. Query all project with status 30
         $aProjects = array();
-        $this->_queryProjects($aProjects);
+        $this->_queryProjects($aProjects, $iShopId);
         echo '<pre>';
         print_r($aProjects);
         echo '</pre>';
 
         echo '<h2>Exportierbare Items vorbereiten</h2>';
-        // Get articles
-        $this->_getItems(
+
+        // 1. Prepare articles join ids
+        $groups = [
+            'articles' => [],
+            'cms' => [],
+            'categories' => [],
+            'attributes' => [],
+        ];
+        $this->_getItemsGroups(
             $aProjects,
             $maxExports,
+            $groups
+        );
+
+        echo '<h2>Vorbereitete Elementengruppen</h2>';
+        echo '<pre>';
+        print_r($groups);
+        echo '</pre>';
+
+        // Get data.
+        $this->_getItems(
+            $aProjects,
+            $groups['articles'],
             'oxarticles',
             'product',
             'articlesfields',
@@ -54,10 +73,9 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             'OXARTICLEID'
         );
 
-        // Get articleextends
         $this->_getItems(
             $aProjects,
-            $maxExports,
+            $groups['articles'],
             'oxartextends',
             'product',
             'artextendsfields',
@@ -67,10 +85,21 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             'OXARTICLEID'
         );
 
-        // Get articleseo
         $this->_getItems(
             $aProjects,
-            $maxExports,
+            $groups['articles'],
+            'oxobject2attribute',
+            'term',
+            'o2attributesfields',
+            'OXOBJECTID',
+            'OXATTRID',
+            'ettm_project2article',
+            'OXARTICLEID'
+        );
+
+        $this->_getItems(
+            $aProjects,
+            $groups['articles'],
             'oxobject2seodata',
             'marketing',
             'articleseofields',
@@ -80,10 +109,9 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             'OXARTICLEID'
         );
 
-        // Get categories
         $this->_getItems(
             $aProjects,
-            $maxExports,
+            $groups['categories'],
             'oxcategories',
             'specialized-text',
             'categoryfields',
@@ -93,10 +121,9 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             'OXCATEGORYID'
         );
 
-        // Get categoriesseo
         $this->_getItems(
             $aProjects,
-            $maxExports,
+            $groups['categories'],
             'oxobject2seodata',
             'marketing',
             'categoryseofields',
@@ -106,10 +133,9 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             'OXCATEGORYID'
         );
 
-        // Get cms.
         $this->_getItems(
             $aProjects,
-            $maxExports,
+            $groups['cms'],
             'oxcontents',
             'marketing',
             'cmsfields',
@@ -119,10 +145,21 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             'OXCMSID'
         );
 
-        // Get cms seo.
         $this->_getItems(
             $aProjects,
-            $maxExports,
+            $groups['cms'],
+            'oxcontents',
+            'marketing',
+            'cmsfields',
+            'OXID',
+            'OXTITLE',
+            'ettm_project2cms',
+            'OXCMSID'
+        );
+
+        $this->_getItems(
+            $aProjects,
+            $groups['cms'],
             'oxobject2seodata',
             'marketing',
             'cmsseofields',
@@ -132,10 +169,9 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             'OXCMSID'
         );
 
-        // Get attribute names.
         $this->_getItems(
             $aProjects,
-            $maxExports,
+            $groups['attributes'],
             'oxattribute',
             'term',
             'attributesfields',
@@ -145,19 +181,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             'OXATTRIBUTEID'
         );
 
-        // Get attribute values.
-        $this->_getItems(
-            $aProjects,
-            $maxExports,
-            'oxobject2attribute',
-            'term',
-            'o2attributesfields',
-            'OXATTRID',
-            'OXVALUE',
-            'ettm_project2attribute',
-            'OXATTRIBUTEID'
-        );
-
+        echo '<h2>Projects before export</h2>';
         echo '<pre>';
         print_r($aProjects);
         echo '</pre>';
@@ -174,6 +198,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
 
         echo '<h2>Update project progress</h2>';
         $this->_updateProjectsProgress($aProjects);
+
     }
 
     /**
@@ -325,11 +350,144 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         }
     }
 
+
+    protected function _getItemsGroups(&$aProjects, $iMaxExports, &$groups) {
+
+        // Get shopid.
+        $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
+        if (isset($_GET['shopId'])) {
+            $iShopId = intval($_GET['shopId']);
+        } else {
+            $iShopId = $oConfig->getShopId();
+        }
+
+        // Get a list of not yet processed elements.
+        $aArticleIds = [];
+        $aCmsIds = [];
+        $aCategoryIds = [];
+        $aAttributeIds = [];
+        $totalElementCount = 0;
+
+        // Try to find articles that need to be processed.
+        if ($totalElementCount < $iMaxExports) {
+            $counter = 0;
+            foreach ($aProjects as $aProject) {
+                if ($totalElementCount < $iMaxExports) {
+                    $sProjectId = $aProject['OXID'];
+                    $limit = $iMaxExports - $totalElementCount;
+                    $sql = "SELECT * FROM `ettm_project2article` WHERE `STATUS` = 0 AND `PROJECT_ID` = '{$sProjectId}' LIMIT {$limit}";
+                    $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sql, []);
+                    if ($oRs !== false && $oRs->count() > 0) {
+                        while (!$oRs->EOF) {
+                            $aArticleIds[] = $oRs->fields;
+                            $counter++;
+                            $totalElementCount++;
+                            $oRs->fetchRow();
+                        }
+                        break;
+                    }
+                }
+            }
+
+            echo "<h2>Found {$counter} articles to export (unless skipped)</h2>";
+            echo '<pre>';
+            print_r($aArticleIds);
+            echo '</pre>';
+        }
+
+        // If no articles found, look for categories.
+        if ($totalElementCount < $iMaxExports) {
+            $counter = 0;
+            foreach ($aProjects as $aProject) {
+                if ($totalElementCount < $iMaxExports) {
+                    $sProjectId = $aProject['OXID'];
+                    $limit = $iMaxExports - $totalElementCount;
+                    $sql = "SELECT * FROM `ettm_project2category` WHERE `STATUS` = 0 AND `PROJECT_ID` = '{$sProjectId}' LIMIT {$limit}";
+                    $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sql, []);
+                    if ($oRs !== false && $oRs->count() > 0) {
+                        while (!$oRs->EOF) {
+                            $aCategoryIds[] = $oRs->fields;
+                            $counter++;
+                            $totalElementCount++;
+                            $oRs->fetchRow();
+                        }
+                        break;
+                    }
+                }
+            }
+
+            echo "<h2>Found {$counter} categories to export (unless skipped)</h2>";
+            echo '<pre>';
+            print_r($aCategoryIds);
+            echo '</pre>';
+        }
+
+        // Look for cms pages.
+        if ($totalElementCount < $iMaxExports) {
+            $counter = 0;
+            foreach ($aProjects as $aProject) {
+                if ($totalElementCount < $iMaxExports) {
+                    $sProjectId = $aProject['OXID'];
+                    $limit = $iMaxExports - $totalElementCount;
+                    $sql = "SELECT * FROM `ettm_project2cms` WHERE `STATUS` = 0 AND `PROJECT_ID` = '{$sProjectId}' LIMIT {$limit}";
+                    $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sql, []);
+                    if ($oRs !== false && $oRs->count() > 0) {
+                        while (!$oRs->EOF) {
+                            $aCmsIds[] = $oRs->fields;
+                            $counter++;
+                            $totalElementCount++;
+                            $oRs->fetchRow();
+                        }
+                        break;
+                    }
+                }
+            }
+
+            echo "<h2>Found {$counter} cms pages to export (unless skipped)</h2>";
+            echo '<pre>';
+            print_r($aCmsIds);
+            echo '</pre>';
+        }
+
+        // Prepare attributes.
+        if ($totalElementCount < $iMaxExports) {
+            $counter = 0;
+            foreach ($aProjects as $aProject) {
+                if ($totalElementCount < $iMaxExports) {
+                    $sProjectId = $aProject['OXID'];
+                    $limit = $iMaxExports - $totalElementCount;
+                    $sql = "SELECT * FROM `ettm_project2attribute` WHERE `STATUS` = 0 AND `PROJECT_ID` = '{$sProjectId}' LIMIT {$limit}";
+                    $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sql, []);
+                    if ($oRs !== false && $oRs->count() > 0) {
+                        while (!$oRs->EOF) {
+                            $aAttributeIds[] = $oRs->fields;
+                            $counter++;
+                            $totalElementCount++;
+                            $oRs->fetchRow();
+                        }
+                        break;
+                    }
+                }
+            }
+
+            echo "<h2>Found {$counter} attributes to export (unless skipped)</h2>";
+            echo '<pre>';
+            print_r($aAttributeIds);
+            echo '</pre>';
+        }
+
+
+        $groups['articles'] = $aArticleIds;
+        $groups['cms'] = $aCmsIds;
+        $groups['categories'] = $aCategoryIds;
+        $groups['attributes'] = $aAttributeIds;
+    }
+
     /**
      * Prepares the items of the project.
      *
      * @param array  $aProjects                 Array with projects.
-     * @param int    $iMaxExports               How many exports can be done in the cronjob.
+     * @param array  $group                     Ids group.
      * @param string $viewName                  Name of the view table of the item table.
      * @param string $textType                  What kind of type is the text. that is important for eurotext, to correctly translate it.
      * @param string $settingName               What fields should be exported.
@@ -338,7 +496,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
      * @param string $joinTableName             What table to join on item table.
      * @param string $joinTableFieldName        What field to use for join.
      */
-    protected function _getItems(&$aProjects, $iMaxExports, $viewName, $textType, $settingName, $idFieldName, $translationCheckFieldName, $joinTableName, $joinTableFieldName)
+    protected function _getItems(&$aProjects, $group, $viewName, $textType, $settingName, $idFieldName, $translationCheckFieldName, $joinTableName, $joinTableFieldName)
     {
         $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
         if (isset($_GET['shopId'])) {
@@ -347,14 +505,35 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
             $iShopId = $oConfig->getShopId();
         }
 
-        $maxExports = intval($oConfig->getShopConfVar('sEXPORTJOBIPJ', $iShopId, 'module:translationmanager6'));
+        if (0 === count($group)) {
+            echo 'Gruppe ist leer. Return' . "<br>";
+            return;
+        }
+
+        $ids = [];
+        foreach ($group as $element) {
+            if (!array_key_exists($element['PROJECT_ID'], $ids)) {
+                $ids[$element['PROJECT_ID']] = [];
+            }
+            $ids[$element['PROJECT_ID']][] = '\'' . $element['OXID'] . '\'';
+        }
+        foreach ($ids as &$projectids) {
+            $projectids = implode(',', $projectids);
+        }
+
         $aExportableItems = array();
         $aLangMapping = $this->_getLangCodesMapping();
         // Exportable fields setting.
         $aItemFields = $oConfig->getShopConfVar($settingName, $iShopId, 'module:translationmanager6');
 
+        if (0 === count($aItemFields)) {
+            echo 'Keine Felder für Export ausgewählt. Return. <br>';
+            return;
+        }
+
         foreach ($aProjects as &$aProject) {
             $sProjectId = $aProject['OXID'];
+
             $sOriginLang = $aProject['LANG_ORIGIN'];
             $aTargetLangs = unserialize($aProject['LANG_TARGET']);
             $bOnlyTranslated = (1 === intval($aProject['ONLY_UNTRANSLATED']));
@@ -367,6 +546,11 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                     $aItemSelects .= ", main_table." . $aItemField;
                 }
             }
+
+            if ('oxobject2attribute' === $viewName) {
+                $aItemSelects .= ", main_table.OXATTRID";
+            }
+
             $sItemSelectTranslationsTable = '';
             $sItemJoinTranslationsTable = '';
             foreach ($aTargetLangs as $aTargetLang) {
@@ -379,7 +563,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
 
                 if ('oxobject2seodata' === $viewName) {
                     $sItemJoinTranslationsTable .= "LEFT JOIN $sTempTable AS {$sTempTable}_{$aTargetLang} ON {$sTempTable}_{$aTargetLang}.`{$idFieldName}` = main_table.`{$idFieldName}` AND {$sTempTable}_{$aTargetLang}.OXLANG='$aTargetLang' AND {$sTempTable}_{$aTargetLang}.OXSHOPID = '$iShopId' \n";
-                } else {
+                }  else {
                     $sItemJoinTranslationsTable .= "LEFT JOIN $sTempTable AS {$sTempTable}_{$aTargetLang} ON {$sTempTable}_{$aTargetLang}.`{$idFieldName}` = main_table.`{$idFieldName}` \n";
                 }
             }
@@ -389,8 +573,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                 FROM `{$joinTableName}`
                 JOIN $sItemTable AS main_table ON main_table.`{$idFieldName}` = `{$joinTableName}`.`{$joinTableFieldName}`
                 $sItemJoinTranslationsTable
-                WHERE `{$joinTableName}`.`PROJECT_ID` = '$sProjectId' AND `{$joinTableName}`.`STATUS` = 0
-                LIMIT {$iMaxExports}
+                WHERE `{$joinTableName}`.`OXID` IN ({$ids[$sProjectId]})
             ";
 
             $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, array($aProject['OXID']));
@@ -411,6 +594,14 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                 $type = $aExportableItem['type'];
                 unset($aExportableItem['type']);
                 $translations = array();
+
+                if (array_key_exists('OXATTRID', $aExportableItem)) {
+                    $secondaryId = $aExportableItem['OXATTRID'];
+                    unset($aExportableItem['OXATTRID']);
+                } else {
+                    $secondaryId = '';
+                }
+
                 foreach ($aTargetLangs as $aTargetLang) {
                     $translations[$aTargetLang] = intval($aExportableItem['translated_'.$aTargetLang]);
                     unset($aExportableItem['translated_'.$aTargetLang]);
@@ -425,6 +616,7 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                                 'oxid_item_id' => $oxid,
                                 'oxid_shop_id' => $iShopId,
                                 'oxid_item_table' => $viewName,
+                                'oxid_secondary_id' => $secondaryId,
                                 'target_lang' => $aTargetLang,
                                 'skip' => ($bOnlyTranslated && (1 === $translations[$aTargetLang])) ? 1 : 0
                             )
@@ -509,11 +701,21 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
      *
      * @param array $aProjects Reference to projects array.
      */
-    protected function _queryProjects(&$aProjects)
+    protected function _queryProjects(&$aProjects, $iShopId = null)
     {
+
+        if (!$iShopId) {
+            if (isset($_GET['shopId'])) {
+                $iShopId = intval($_GET['shopId']);
+            } else {
+                $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
+                $iShopId = $oConfig->getShopId();
+            }
+        }
+
         $sTable = 'ettm_project';
-        $sProjectQuery = "SELECT * FROM $sTable WHERE $sTable.STATUS = 30";
-        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sProjectQuery, array());
+        $sProjectQuery = "SELECT * FROM $sTable WHERE $sTable.STATUS = 30 AND $sTable.OXSHOPID = ?";
+        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sProjectQuery, array($iShopId));
 
         if ($oRs !== false && $oRs->count() > 0) {
             while (!$oRs->EOF) {
