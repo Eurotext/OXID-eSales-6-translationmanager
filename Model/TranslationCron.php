@@ -19,6 +19,15 @@ class TranslationCron extends \OxidEsales\Eshop\Core\Model\BaseModel
      */
     public function execute()
     {
+        // 0. Get some options
+        $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
+
+        if (isset($_GET['shopId'])) {
+            $iShopId = intval($_GET['shopId']);
+        } else {
+            $iShopId = $oConfig->getShopId();
+        }
+
         // 1. Query all project with status 50
         $aProjects = [];
         $this->_queryProjects($aProjects);
@@ -32,11 +41,20 @@ class TranslationCron extends \OxidEsales\Eshop\Core\Model\BaseModel
      *
      * @param array $aProjects Reference to projects array.
      */
-    protected function _queryProjects(&$aProjects)
+    protected function _queryProjects(&$aProjects, $iShopId = null)
     {
+        if (!$iShopId) {
+            if (isset($_GET['shopId'])) {
+                $iShopId = intval($_GET['shopId']);
+            } else {
+                $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
+                $iShopId = $oConfig->getShopId();
+            }
+        }
+
         $sTable = 'ettm_project';
-        $sProjectQuery = "SELECT * FROM $sTable WHERE $sTable.STATUS = 50";
-        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sProjectQuery, []);
+        $sProjectQuery = "SELECT * FROM $sTable WHERE $sTable.STATUS = 50 AND $sTable.OXSHOPID = ?";
+        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sProjectQuery, array($iShopId));
 
         if ($oRs !== false && $oRs->count() > 0) {
             while (!$oRs->EOF) {
