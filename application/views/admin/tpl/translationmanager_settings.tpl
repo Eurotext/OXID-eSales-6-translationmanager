@@ -168,6 +168,7 @@
                                     </label>
                                 </div>
                             [{ /foreach }]
+
                         </div>
                     </div>
 
@@ -199,6 +200,11 @@
                             <div class="uk-width-1-1 uk-margin-small">
                                 <label>
                                     <input type="checkbox" class="double-binding" data-target="cb_oxarticles_oxvarselect" value="OXVARSELECT"> [{oxmultilang ident="ETTM_SETTINGS_OXARTICLES_OXVARSELECT"}]
+                                </label>
+                            </div>
+                            <div class="uk-width-1-1 uk-margin-small">
+                                <label>
+                                    <input type="checkbox" class="double-binding" data-target="cb_oxobject2attribute_oxvalue" value="OXTITLE"> [{oxmultilang ident="ETTM_SETTINGS_OXOBJECT2ATTRIBUTE_OXVALUE"}]
                                 </label>
                             </div>
                         </div>
@@ -234,6 +240,16 @@
                                     </label>
                                 </div>
                             [{ /foreach }]
+                            <div class="uk-width-1-1 uk-margin-small">
+                                <h4>oxobject2attribute</h4>
+                            </div>
+                            [{ foreach from=$o2attributes_fields item=field }]
+                            <div class="uk-width-1-1 uk-margin-small">
+                                <label>
+                                    <input type="checkbox" id="cb_oxobject2attribute_[{$field.name|lower}]" name="o2attributesfields[]" value="[{$field.name}]" [{if $field.selected}]checked="checked"[{/if}]> [{$field.name}]
+                                </label>
+                            </div>
+                            [{ /foreach }]
                         </div>
                     </div>
 
@@ -246,11 +262,6 @@
                                     <input type="checkbox" class="double-binding" data-target="cb_oxattribute_oxtitle" value="OXTITLE"> [{oxmultilang ident="ETTM_SETTINGS_OXATTRIBUTE_OXTITLE"}]
                                 </label>
                             </div>
-                            <div class="uk-width-1-1 uk-margin-small">
-                                <label>
-                                    <input type="checkbox" class="double-binding" data-target="cb_oxobject2attribute_oxvalue" value="OXTITLE"> [{oxmultilang ident="ETTM_SETTINGS_OXOBJECT2ATTRIBUTE_OXVALUE"}]
-                                </label>
-                            </div>
                         </div>
 
                         <div class="ettm-view ettm-view--ext" style="display: none">
@@ -261,16 +272,6 @@
                             <div class="uk-width-1-1 uk-margin-small">
                                 <label>
                                     <input type="checkbox" id="cb_oxattribute_[{$field.name|lower}]" name="attributesfields[]" value="[{$field.name}]" [{if $field.selected}]checked="checked"[{/if}]> [{$field.name}]
-                                </label>
-                            </div>
-                            [{ /foreach }]
-                            <div class="uk-width-1-1 uk-margin-small">
-                                <h4>oxobject2attribute</h4>
-                            </div>
-                            [{ foreach from=$o2attributes_fields item=field }]
-                            <div class="uk-width-1-1 uk-margin-small">
-                                <label>
-                                    <input type="checkbox" id="cb_oxobject2attribute_[{$field.name|lower}]" name="o2attributesfields[]" value="[{$field.name}]" [{if $field.selected}]checked="checked"[{/if}]> [{$field.name}]
                                 </label>
                             </div>
                             [{ /foreach }]
@@ -293,7 +294,7 @@
                             </div>
                             <div class="uk-width-1-1 uk-margin-small">
                                 <label>
-                                    <input type="checkbox" class="double-binding" data-target="cb_oxcategories_oxlongdesc">[{oxmultilang ident="ETTM_SETTINGS_OXCATEGORIES_OXOXLONGDESC"}]
+                                    <input type="checkbox" class="double-binding" data-target="cb_oxcategories_oxlongdesc"> [{oxmultilang ident="ETTM_SETTINGS_OXCATEGORIES_OXOXLONGDESC"}]
                                 </label>
                             </div>
                         </div>

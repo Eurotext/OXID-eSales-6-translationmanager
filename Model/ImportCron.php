@@ -13,6 +13,75 @@ namespace Eurotext\Translationmanager\Model;
  */
 class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
 {
+    protected $whitelist = [
+    ];
+
+    public function __construct() {
+
+        // Get list of cms fields
+        $sQuery = "SHOW COLUMNS FROM oxcontents WHERE (Type LIKE '%char%' OR Type LIKE '%text%') AND Field != 'OXID'";
+        $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->getAll(
+            $sQuery,
+            array()
+        );
+        foreach ($resultSet as $result) {
+            $this->whitelist[] = $result[0];
+        }
+
+        $sQuery = "SHOW COLUMNS FROM oxcategories WHERE (Type LIKE '%char%' OR Type LIKE '%text%') AND Field != 'OXID'";
+        $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->getAll(
+            $sQuery,
+            array()
+        );
+        foreach ($resultSet as $result) {
+            $this->whitelist[] = $result[0];
+        }
+
+        $sQuery = "SHOW COLUMNS FROM oxattribute WHERE (Type LIKE '%char%' OR Type LIKE '%text%') AND Field != 'OXID'";
+        $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->getAll(
+            $sQuery,
+            array()
+        );
+        foreach ($resultSet as $result) {
+            $this->whitelist[] = $result[0];
+        }
+
+        $sQuery = "SHOW COLUMNS FROM oxobject2attribute WHERE (Type LIKE '%char%' OR Type LIKE '%text%') AND Field != 'OXID'";
+        $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->getAll(
+            $sQuery,
+            array()
+        );
+        foreach ($resultSet as $result) {
+            $this->whitelist[] = $result[0];
+        }
+
+        $sQuery = "SHOW COLUMNS FROM oxarticles WHERE (Type LIKE '%char%' OR Type LIKE '%text%') AND Field != 'OXID'";
+        $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->getAll(
+            $sQuery,
+            array()
+        );
+        foreach ($resultSet as $result) {
+            $this->whitelist[] = $result[0];
+        }
+
+        $sQuery = "SHOW COLUMNS FROM oxartextends WHERE (Type LIKE '%char%' OR Type LIKE '%text%') AND Field != 'OXID'";
+        $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->getAll(
+            $sQuery,
+            array()
+        );
+        foreach ($resultSet as $result) {
+            $this->whitelist[] = $result[0];
+        }
+
+        $sQuery = "SHOW COLUMNS FROM oxobject2seodata WHERE (Type LIKE '%char%' OR Type LIKE '%text%') AND Field != 'OXOBJECTID'";
+        $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->getAll(
+            $sQuery,
+            array()
+        );
+        foreach ($resultSet as $result) {
+            $this->whitelist[] = $result[0];
+        }
+    }
 
     /**
      * Standard cron executing function.
@@ -35,7 +104,7 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
 
         echo '<h2>Import-JOBS vorbereiten</h2>';
         $aJobs = [];
-        $this->_queryJobs($aJobs, $maxImports);
+        $this->_queryJobs($aJobs, $maxImports, $iShopId);
         echo '<pre>';
         print_r($aJobs);
         echo '<pre>';
@@ -121,8 +190,10 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         foreach ($aJob['BODY']['data'] as $aItem) {
             $iTargetLanguageCode = $aCodesMapping[$aItem['__meta']['target_lang']];
             $iShopId = $aItem['__meta']['oxid_shop_id'];
-            $sTargetTable = getViewName($aItem['__meta']['oxid_item_table'], $iTargetLanguageCode, $iShopId);
+            $sBaseTargetTable = $aItem['__meta']['oxid_item_table'];
+            $sTargetTable = getViewName($sBaseTargetTable, $iTargetLanguageCode, $iShopId);
             $sTargetOxid = $aItem['__meta']['oxid_item_id'];
+            $oxSecondaryId = $aItem['__meta']['oxid_secondary_id'];
             unset($aItem['__meta']);
 
             if (0 < count($aItem)) {
@@ -152,28 +223,39 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
                 return;
             }
             foreach ($aData as $sKey => $sValue) {
-                $aUpdateFields[] = $sKey . ' = ?';
-                $aParams[] = $sValue;
+                // If the the key is whitelisted
+                if (in_array($sKey, $this->whitelist)) {
+                    $aUpdateFields[] = $sKey . ' = ?';
+                    $aParams[] = $sValue;
+                }
             }
             $sUpdateFields = implode(', ', $aUpdateFields);
             $aParams[] = $sTargetOxid;
 
-            // 1. Write to table
-            if ('oxobject2seodata' === $sTargetTable) {
-                $aParams[] = $iShopId;
-                $aParams[] = $iTargetLanguageCode;
+            // 1. Write to table only if there are updateable fields.
+            if (0 < count($aUpdateFields) ) {
+                if ('oxobject2seodata' === $sTargetTable) {
+                    $aParams[] = $iShopId;
+                    $aParams[] = $iTargetLanguageCode;
 
-                \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
-                    "UPDATE $sTargetTable SET $sUpdateFields WHERE OXOBJECTID = ? AND OXSHOPID= ? AND OXLANG = ?",
-                    $aParams
-                );
-            } else {
-                \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
-                    "UPDATE $sTargetTable SET $sUpdateFields WHERE OXID = ?",
-                    $aParams
-                );
+                    \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
+                        "UPDATE $sTargetTable SET $sUpdateFields WHERE OXOBJECTID = ? AND OXSHOPID= ? AND OXLANG = ?",
+                        $aParams
+                    );
+                } elseif ('oxobject2attribute' === $sBaseTargetTable) {
+                    $aParams[] = $oxSecondaryId;
+
+                    \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
+                        "UPDATE $sTargetTable SET $sUpdateFields WHERE OXOBJECTID = ? AND OXATTRID = ?",
+                        $aParams
+                    );
+                } else {
+                    \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
+                        "UPDATE $sTargetTable SET $sUpdateFields WHERE OXID = ?",
+                        $aParams
+                    );
+                }
             }
-
             // 2. Mark job as done
             \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->execute(
                 "UPDATE `ettm_importjobs` SET STATUS=10 WHERE OXID = ?",
@@ -257,11 +339,25 @@ class ImportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
      * @param array $aJobs      List of Jobs.
      * @param int   $maxImports Max imports per call.
      */
-    protected function _queryJobs(&$aJobs, &$maxImports)
+    protected function _queryJobs(&$aJobs, &$maxImports, $iShopId = null)
     {
+        if (!$iShopId) {
+            if (isset($_GET['shopId'])) {
+                $iShopId = intval($_GET['shopId']);
+            } else {
+                $oConfig = \OxidEsales\Eshop\Core\Registry::getConfig();
+                $iShopId = $oConfig->getShopId();
+            }
+        }
+
         $sTable = 'ettm_importjobs';
-        $sQuery = "SELECT * FROM $sTable WHERE $sTable.STATUS = 0 LIMIT $maxImports";
-        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, []);
+        $sProjectTable = 'ettm_project';
+        $sQuery = "SELECT $sTable.*
+                    FROM $sTable
+                    JOIN $sProjectTable ON $sProjectTable.OXID = $sTable.PROJECT_ID
+                    WHERE $sTable.STATUS = 0 AND $sProjectTable.OXSHOPID = ? AND $sProjectTable.STATUS = 70
+                    LIMIT $maxImports";
+        $oRs = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQuery, [$iShopId]);
 
         if ($oRs !== false && $oRs->count() > 0) {
             while (!$oRs->EOF) {
