@@ -532,6 +532,16 @@ class ExportCron extends \OxidEsales\Eshop\Core\Model\BaseModel
         }
 
         foreach ($aProjects as &$aProject) {
+
+            /**
+             * We iterate through selected projects. If for the current project there is
+             * no item ids, then we skip the iteration, otherwise we fetch required
+             * data from the database.
+             */
+            if (empty($ids[$aProject['OXID']])) {
+                continue;
+            }
+
             $sProjectId = $aProject['OXID'];
 
             $sOriginLang = $aProject['LANG_ORIGIN'];
