@@ -98,10 +98,11 @@ class ImportDetail extends \OxidEsales\Eshop\Application\Controller\Admin\AdminD
         } else {
             return;
         }
-        $oProject->loadImportItems();
-        $oProject->updateImportProgress();
-        $oProject->assign(['ettm_project__status' => 70]);
-        $oProject->save();
+        if (0 < $oProject->loadImportItems()) {
+            $oProject->updateImportProgress();
+            $oProject->assign(['ettm_project__status' => 70]);
+            $oProject->save();
+        }
 
         $this->_aViewData['updatelist'] = 1;
         return;
