@@ -355,7 +355,7 @@ class Project extends \OxidEsales\Eshop\Core\Model\BaseModel
             'ettm_project__percent_finished' => $percentageFinished,
         ];
 
-        if (100 === $percentageFinished) {
+        if (100 === $percentageFinished && (0 < $totalCount)) {
             $aParams['ettm_project__total_items'] = 0;
             $aParams['ettm_project__finished_items'] = 0;
             $aParams['ettm_project__percent_finished'] = 0;
