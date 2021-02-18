@@ -43,13 +43,13 @@ $aLang = [
     'ETTM_SETTINGS_LANGUAGES' => 'Spachen:',
     'ETTM_SETTINGS_SHOP_LANGUAGE'                  => 'Ihre Sprachen im OXID eShop',
     'ETTM_SETTINGS_EUROTEXT_LANGUAGE'              => 'Sprachen im &Uuml;bersetzungsportal',
-    'ETTM_HELP_SOURCE' => 'Lorem ipsum',
+    'ETTM_HELP_SOURCE' => 'Bitte wählen Sie den Service Endpunkt aus.',
     'ETTM_SETTINGS_CRON' => 'Cron-Jobs:',
     'ETTM_SETTINGS_CRON_NAME' => 'Cron-Job Name',
     'ETTM_SETTINGS_CRON_ITM' => 'Items pro Aufruf',
     'ETTM_SETTINGS_CRON_EXPORT' => 'Export-Job:',
     'ETTM_SETTINGS_CRON_IMPORT' => 'Import-Job:',
-    'ETTM_HELP_EXPORTJOBIPJ' => 'Bitte legen Sie die Anzahl der Items pro Export-Cron-Job fest. Bei großen Datenmengen, z.B. sehr vielen Produkttexten, empfehlen wir eine Einstellung von 500.',
+    'ETTM_HELP_EXPORTJOBIPJ' => 'Bitte legen Sie die Anzahl der Items pro Export-Cron-Job fest. Bei großen Datenmengen, z.B. sehr vielen Produkttexten, empfehlen wir eine Einstellung von 300-500.',
     'ETTM_HELP_IMPORTJOBIPJ' => 'Dieser Standardwert eignet sich für fast alle Projektarten',
     'ETTM_SETTINGS_FIELDS' => 'Übersetzbare Felder:',
     'ETTM_SETTINGS_FIELDS_VIEW' => 'Ansicht: ',
@@ -82,7 +82,7 @@ $aLang = [
     'ETTM_EXPORT_GENERAL_STARTLANG' => 'Ausgangssprache:',
     'ETTM_EXPORT_GENERAL_TARGETLANG' => 'Zielsprache(n):',
     'ETTM_EXPORT_ELEMENTS' => 'Elemente für Übersetzung auswählen',
-    'ETTM_EXPORT_ELEMENTS_TEXTBLOCK' => '<p>Mit einem Klick auf den nachfolgenden Button werden die ausgewählten Texte an das Übersetzungsportal übermittelt und Sie erhalten innerhalb von 24 Stunden (werktags) ein detailliertes Angebot für die Übersetzung Ihrer Inhalte.</p><p>Dieser Vorgang kann je nach Auswahl mehrere Minuten dauern. Brechen Sie den Vorgang nicht ab und warten Sie, bis sie die Erfolgsmeldung angezeigt bekommen.</p>',
+    'ETTM_EXPORT_ELEMENTS_TEXTBLOCK' => '<p>Mit einem Klick auf den nachfolgenden Button werden die ausgewählten Texte an das Übersetzungsportal übermittelt und Sie erhalten innerhalb von 24 Stunden (werktags) ein detailliertes Angebot für die Übersetzung Ihrer Inhalte.</p><p>Dieser Vorgang kann je nach Auswahl mehrere Minuten dauern. Brechen Sie den Vorgang nicht ab und warten Sie, bis Sie die Erfolgsmeldung angezeigt bekommen.</p>',
     'ETTM_EXPORT_CMS_SELECTED' => 'CMS-Seiten ausgewählt',
     'ETTM_EXPORT_CMS_SELECT' => 'CMS-Seiten auswählen &#x1F5D7;',
     'ETTM_EXPORT_CAT_SELECTED' => 'Kategorien ausgewählt',
@@ -93,15 +93,15 @@ $aLang = [
     'ETTM_EXPORT_ARTICLE_SELECT' => 'Artikel auswählen &#x1F5D7;',
 
     'ETTM_EXPORT_TRANSMIT' => 'Daten übermitteln',
-    'ETTM_EXPORT_TRANSMIT_TEXTBLOCK' => '<p>Mit einem Klick auf den nachfolgenden Button werden die ausgewählten Texte an das Übersetzungsportal übermittelt und Sie erhalten innerhalb von 24 Stunden (werktags) ein detailliertes Angebot für die Übersetzung Ihrer Inhalte.</p><p>Dieser Vorgang kann je nach Auswahl mehrere Minuten dauern. Brechen Sie den Vorgang nicht ab und warten Sie, bis sie die Erfolgsmeldung angezeigt bekommen.</p>',
+    'ETTM_EXPORT_TRANSMIT_TEXTBLOCK' => '<p>Mit einem Klick auf den nachfolgenden Button werden die ausgewählten Texte an das Übersetzungsportal übermittelt und Sie erhalten innerhalb von 24 Stunden (werktags) ein detailliertes Angebot für die Übersetzung Ihrer Inhalte.</p><p>Dieser Vorgang kann je nach Auswahl mehrere Minuten dauern. Brechen Sie den Vorgang nicht ab und warten Sie, bis Sie die Erfolgsmeldung angezeigt bekommen.</p>',
     'ETTM_EXPORT_TRANSMIT_SKIP' => ' - Bereits übersetzte Elemente überspringen.',
     'ETTM_EXPORT_START_AFTER_EXPORT'   => ' - Die Übersetzung unmittelbar nach dem Export starten.',
 
     'ETTM_EXPORT_TRANSMIT_START' => 'Export starten',
 
     'ETTM_EXPORT_STATUS' => 'Status',
-    'ETTM_EXPORT_STATUS_TEXTBLOCK1' => '<p>Das Projekt wird im Moment in EuroText Datenbank expotiert. Anschließend dies und das. Diesen Text kann man nachträglich bearbeiten. Ich würde sagen: hier sollen weitere Schritte für den Kunden beschrieben werden.</p>',
-    'ETTM_EXPORT_STATUS_TEXTBLOCK2' => '<p>Export wurde erfolgreich abgeschloßen. Bald gibt\'s hier mehr Text zu sehen.</p>',
+    'ETTM_EXPORT_STATUS_TEXTBLOCK1' => '<p>Das Projekt wird im Moment in die Eurotext API expotiert. Sie erhalten im nächsten Schritt ein Angebot von Ihrem Projektmanager. Vertragskunden erhalten detaillierte Liefertermine und eine Auftragsbestätigung.</p>',
+    'ETTM_EXPORT_STATUS_TEXTBLOCK2' => '<p>Export wurde erfolgreich abgeschlossen.</p>',
     'ETTM_EXPORT_STATUS_TRANSMITTED' => 'An Eurotext übertragen:&nbsp;',
     'ETTM_EXPORT_STATUS_SKIPPED' => 'Übersprungen:&nbsp;',
     'ETTM_EXPORT_STATUS_ERRORS' => 'Fehler bei Übertragung:&nbsp;',
@@ -119,7 +119,7 @@ $aLang = [
     'ETTM_IMPORT_START' => 'Import starten',
     'ETTM_IMPORT_RUNNING' => '<p>Das Projekt wird im Moment importiert. Bitte warten.</p>',
     'ETTM_IMPORT_FINISHED' => '<p>Import abgeschloßen.</p>',
-    'ETTM_IMPORT_STATUS_TRANSLATION' => '<p>Das Projekt befindet sich in Übersetzung.</p>',
+    'ETTM_IMPORT_STATUS_TRANSLATION' => '<p>Das Projekt befindet sich in der Übersetzung.</p>',
 
 
     'ETTM_LIST_EXTPROJECTID' => 'Eurotext Projekt Id',
@@ -129,7 +129,7 @@ $aLang = [
     'ETTM_LIST_PROGRESS' => 'Progress',
     'ETTM_LIST_STATUS' => 'Status',
     'ETTM_LIST_LANSTCHANGE' => 'Letzte Änderung',
-    'ETTM_LIST_NOTREGISTERED' => 'Noch nicht bei EuroText registriert',
+    'ETTM_LIST_NOTREGISTERED' => 'Noch nicht bei Eurotext registriert',
 
     'EXPORT_ART_SKIPTRANSLATES' => 'Bereits übersetzte Elemente ausblenden',
 
@@ -137,7 +137,7 @@ $aLang = [
     'ETTM_SUPPORT_SUB1' => 'Dokumentation und Hilfe:',
     'ETTM_SUPPORT_SUB2' => 'Support:',
     'ETTM_SUPPORT_SUB1_TEXTBLOCK' => '<p>Die Dokumentation zum Plugin finden Sie jederzeit auf <p><a target="_blank" href="https://eurotext.de/dokumentation/oxid/">https://eurotext.de/dokumentation/oxid/</a></p>',
-    'ETTM_SUPPORT_SUB2_TEXTBLOCK' => '<p>Bitte wenden Sie sich bei Fragen und Problemen an Ihr Eurotext Projektteam oder schreiben Sie eine E-Mail an <a href="mailto:translationmanager@eurotext.de?subject=Rückfrage%20translationMANAGER%20für%20OXID 6">translationmanager@eurotext.de</a>.</p>',
+    'ETTM_SUPPORT_SUB2_TEXTBLOCK' => '<p>Bitte wenden Sie sich bei Fragen und Problemen an Ihr Eurotext Projektteam oder schreiben Sie eine E-Mail an <a href="mailto:translationmanager@eurotext.de?subject=Rückfrage%20translationMANAGER%20für%20OXID 6">b>translationmanager@eurotext.de</b></a>.</p>',
 
     'AJAX_DESCRIPTION' => 'Ziehen Sie die Elemente zwischen den Listen hin und her, um die Elemente f&uuml;r die &Uuml;bersetzung zuzuordnen.',
     'EXPORT_MAIN_ALLCMS' => 'Alle CMS Seiten',
