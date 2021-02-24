@@ -43,7 +43,7 @@ $aLang = [
     'ETTM_SETTINGS_LANGUAGES' => 'Spachen:',
     'ETTM_SETTINGS_SHOP_LANGUAGE'                  => 'Ihre Sprachen im OXID eShop',
     'ETTM_SETTINGS_EUROTEXT_LANGUAGE'              => 'Sprachen im &Uuml;bersetzungsportal',
-    'ETTM_HELP_SOURCE' => 'Bitte wählen Sie den Service Endpunkt aus.',
+    'ETTM_HELP_SOURCE' => 'Bitte wählen Sie den Service-Endpunkt aus.',
     'ETTM_SETTINGS_CRON' => 'Cron-Jobs:',
     'ETTM_SETTINGS_CRON_NAME' => 'Cron-Job Name',
     'ETTM_SETTINGS_CRON_ITM' => 'Items pro Aufruf',
@@ -137,7 +137,7 @@ $aLang = [
     'ETTM_SUPPORT_SUB1' => 'Dokumentation und Hilfe:',
     'ETTM_SUPPORT_SUB2' => 'Support:',
     'ETTM_SUPPORT_SUB1_TEXTBLOCK' => '<p>Die Dokumentation zum Plugin finden Sie jederzeit auf <p><a target="_blank" href="https://eurotext.de/dokumentation/oxid/">https://eurotext.de/dokumentation/oxid/</a></p>',
-    'ETTM_SUPPORT_SUB2_TEXTBLOCK' => '<p>Bitte wenden Sie sich bei Fragen und Problemen an Ihr Eurotext Projektteam oder schreiben Sie eine E-Mail an <a href="mailto:translationmanager@eurotext.de?subject=Rückfrage%20translationMANAGER%20für%20OXID 6">b>translationmanager@eurotext.de</b></a>.</p>',
+    'ETTM_SUPPORT_SUB2_TEXTBLOCK' => '<p>Bitte wenden Sie sich bei Fragen und Problemen an Ihr Eurotext Projektteam oder schreiben Sie eine E-Mail an <a href="mailto:translationmanager@eurotext.de?subject=Rückfrage%20translationMANAGER%20für%20OXID 6"><b>translationmanager@eurotext.de</b></a>.</p>',
 
     'AJAX_DESCRIPTION' => 'Ziehen Sie die Elemente zwischen den Listen hin und her, um die Elemente f&uuml;r die &Uuml;bersetzung zuzuordnen.',
     'EXPORT_MAIN_ALLCMS' => 'Alle CMS Seiten',
