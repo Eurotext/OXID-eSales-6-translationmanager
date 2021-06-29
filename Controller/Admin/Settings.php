@@ -187,7 +187,7 @@ class Settings extends \OxidEsales\Eshop\Application\Controller\Admin\AdminContr
         $aConfStrs = \OxidEsales\Eshop\Core\Registry::getConfig()->getRequestParameter('confstrs');
 
         // Check if API Key Works
-        $uri = '/api/v1/project.json';
+        $uri = '/api/v1/info/whoami.json';
         $headers = [
             'Content-Type' => 'application/json',
             'apikey' => $aConfStrs['sAPIKEY'],
