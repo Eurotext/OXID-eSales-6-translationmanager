@@ -1,5 +1,6 @@
 [{include file="popups/headitem.tpl" title="GENERAL_ADMIN_TITLE"|oxmultilangassign}]
-
+<script type="text/javascript" src="[{$oViewConf->getModuleUrl("translationmanager6", "out/admin/js/datepicker-full.min.js")}]"></script>
+<link rel="stylesheet" href="[{$oViewConf->getModuleUrl("translationmanager6", "out/admin/css/datepicker.css")}]">
 <table width="100%">
     <colgroup>
         <col span="2" width="50%" />
@@ -16,11 +17,31 @@
         </td>
         <td></td>
     </tr>
-    <tr class="edittext">
-        <td colspan="2">[{ oxmultilang ident="AJAX_DESCRIPTION" }]<br>[{ oxmultilang ident="GENERAL_FILTERING" }]<br /><br /></td>
+    <tr>
+        <td colspan="2"><br><label><input type="checkbox" name="filterbytime" class="editinput" value="1"> [{ oxmultilang ident="EXPORT_MAIN_DATERANGE" }]</label></td>
+    </tr>
+    <tr id="rangecontainer" style="display: none;">
+        <td colspan="2">
+            <br>
+            <div id="innercontainerrange">
+                <select name="filtermode" class="editinput">
+                    <option value="created" selected>[{ oxmultilang ident="EXPORT_MAIN_DATERANGE_CRTD" }]</option>
+                    <option value="updated">[{ oxmultilang ident="EXPORT_MAIN_DATERANGE_UPDTD" }]</option>
+                </select>
+                <span>[{ oxmultilang ident="EXPORT_MAIN_FROM" }]</span>
+                <input type="text" name="start">
+                <span>[{ oxmultilang ident="EXPORT_MAIN_TO" }]</span>
+                <input type="text" name="end">
+                &nbsp;
+                <button id="applydatefilter">[{ oxmultilang ident="EXPORT_MAIN_FILTER" }]</button>
+            </div>
+        </td>
     </tr>
     <tr class="edittext">
-        <td colspan="2"><input type="checkbox" name="skiptranslated" class="editinput" value="[{$editlangs}]" checked="checked"> [{ oxmultilang ident="EXPORT_ART_SKIPTRANSLATES" }]</td>
+        <td colspan="2"><br><label><input type="checkbox" name="skiptranslated" class="editinput" value="[{$editlangs}]" checked="checked"> [{ oxmultilang ident="EXPORT_ART_SKIPTRANSLATES" }]</label></td>
+    </tr>
+    <tr class="edittext">
+        <td colspan="2"><br>[{ oxmultilang ident="AJAX_DESCRIPTION" }]<br>[{ oxmultilang ident="GENERAL_FILTERING" }]<br /><br /></td>
     </tr>
     <tr class="edittext">
         <td align="center"><b>[{ oxmultilang ident="EXPORT_MAIN_ALLARTICLES" }]</b></td>
@@ -77,6 +98,12 @@
                 sRequest += '&nofilter=1';
             }
 
+            if (document.querySelector('input[name="filterbytime"]').checked) {
+                sRequest += '&atrmode=' + document.querySelector('select[name="filtermode"]').value;
+                sRequest += '&start=' + document.querySelector('input[name="start"]').value;
+                sRequest += '&end='+ document.querySelector('input[name="end"]').value;
+            }
+
             return sRequest;
         }
 
@@ -88,7 +115,50 @@
         document.querySelector('input[name="skiptranslated"]').addEventListener('change', function(e) {
             YAHOO.oxid.container1.getPage( 0 );
         });
+
+        document.querySelector('#applydatefilter').addEventListener('click', function(e) {
+            YAHOO.oxid.container1.getPage( 0 );
+        });
     } );
+</script>
+
+<script>
+    $E.onDOMReady( function() {
+        /**
+         * German translation for bootstrap-datepicker
+         * Sam Zurcher <sam@orelias.ch>
+         */
+        (function () {
+            Datepicker.locales.de = {
+                days: ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+                daysShort: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+                daysMin: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+                months: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+                monthsShort: ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+                today: "Heute",
+                monthsTitle: "Monate",
+                clear: "Löschen",
+                weekStart: 1,
+                format: "dd.mm.yyyy"
+            };
+        }());
+
+        document.querySelector('input[name="filterbytime"]').addEventListener('change', function(e) {
+            if (this.checked) {
+                document.querySelector('#rangecontainer').style.display = 'table-row';
+            } else {
+                document.querySelector('#rangecontainer').style.display = 'none';
+            }
+        });
+
+        const elem = document.getElementById('innercontainerrange');
+        const rangepicker = new DateRangePicker(elem, {
+            "format": "dd.mm.yyyy",
+            "autohide": true,
+            "language": "de"
+        });
+    });
+
 </script>
 
 </body>

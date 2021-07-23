@@ -65,6 +65,24 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
             $sShopJoin = "";
         }
 
+        $sTimefilter = "";
+
+        if (!empty($oConfig->getRequestParameter('atrmode'))) {
+            $originalStart = (!empty($oConfig->getRequestParameter('start')))?$oConfig->getRequestParameter('start'):date('d.m.Y', time());
+            $originalEnd = (!empty($oConfig->getRequestParameter('end')))?$oConfig->getRequestParameter('end'):date('d.m.Y', time());
+
+            $start = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote(date('Y-m-d', strtotime($originalStart)) . ' 00:00:00');
+            $end = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->quote(date('Y-m-d', strtotime($originalEnd)) . ' 23:59:59');
+
+            if ('updated' === $oConfig->getRequestParameter('atrmode')) {
+                $sTimefilter = " AND $sArticleTable.OXTIMESTAMP >= $start AND $sArticleTable.OXTIMESTAMP <= $end";
+            }
+
+            if ('created' === $oConfig->getRequestParameter('atrmode')) {
+                $sTimefilter = " AND $sArticleTable.OXINSERT >= $start AND $sArticleTable.OXINSERT <= $end";
+            }
+        }
+
         // Has target langs selected?
         $sJoins = '';
         if ($oConfig->getRequestParameter('targetlangs') && 1 !== intval($oConfig->getRequestParameter('nofilter'))) {
@@ -99,7 +117,7 @@ class ArticlesSelectionAjax extends \OxidEsales\Eshop\Application\Controller\Adm
                     $sJoins
                     WHERE $sJoinTable.OXID IS NULL";
             }
-
+            $sQAdd = $sQAdd.$sTimefilter;
         } else {
             $sQAdd = " from $sArticleTable
                 LEFT JOIN $sJoinTable
