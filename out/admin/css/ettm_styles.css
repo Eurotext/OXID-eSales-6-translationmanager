@@ -1081,8 +1081,17 @@
 .listitem4 .ettm-progress__inner {
   background-color: white; }
 
+.ettm-view-activator {
+  display: inline-block;
+  background-color: #f0f0f0;
+  padding: 2px 8px;
+  color: #006ab4;
+}
+
 .ettm-view-activator.active {
-  font-weight: 700; }
+  font-weight: 700;
+  text-decoration: underline;
+}
 
 .ettm-button-start.ettm-button-start.ettm-button-start {
   margin-top: 20px;
