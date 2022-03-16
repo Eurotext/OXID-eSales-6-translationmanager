@@ -52,13 +52,13 @@ window.onload = function ()
 
     <!-- table headers group -->
     <tr>
-        <td class="listheader first" height="15">[{oxmultilang ident="ETTM_LIST_EXTPROJECTID"}]</td>
-        <td class="listheader" height="15">[{oxmultilang ident="ETTM_LIST_PROJECTNAME"}]</td>
-        <td class="listheader" height="15">[{oxmultilang ident="ETTM_LIST_STARTLANG"}]</td>
-        <td class="listheader" height="15">[{oxmultilang ident="ETTM_LIST_TARGETLANG"}]</td>
-        <td class="listheader" height="15">[{oxmultilang ident="ETTM_LIST_PROGRESS"}]</td>
-        <td class="listheader" height="15">[{oxmultilang ident="ETTM_LIST_STATUS"}]</td>
-        <td class="listheader" height="15">[{oxmultilang ident="ETTM_LIST_LANSTCHANGE"}]</td>
+        <td class="listheader first" height="15"><a data-sortorder="desc" href="Javascript:top.oxid.admin.setSorting( document.search, 'ettm_project', 'EXTERNAL_ID', 'desc');document.search.submit();" class="listheader">[{oxmultilang ident="ETTM_LIST_EXTPROJECTID"}]</a></td>
+        <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'ettm_project', 'NAME', 'asc');document.search.submit();" class="listheader">[{oxmultilang ident="ETTM_LIST_PROJECTNAME"}]</a></td>
+        <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'ettm_project', 'LANG_ORIGIN', 'asc');document.search.submit();" class="listheader">[{oxmultilang ident="ETTM_LIST_STARTLANG"}]</a></td>
+        <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'ettm_project', 'LANG_TARGET', 'asc');document.search.submit();" class="listheader">[{oxmultilang ident="ETTM_LIST_TARGETLANG"}]</a></td>
+        <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'ettm_project', 'PERCENT_FINISHED', 'desc');document.search.submit();" class="listheader">[{oxmultilang ident="ETTM_LIST_PROGRESS"}]</a></td>
+        <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'ettm_project', 'STATUS', 'asc');document.search.submit();" class="listheader">[{oxmultilang ident="ETTM_LIST_STATUS"}]</a></td>
+        <td class="listheader" height="15"><a href="Javascript:top.oxid.admin.setSorting( document.search, 'ettm_project', 'UPDATED_AT', 'desc');document.search.submit();" class="listheader">[{oxmultilang ident="ETTM_LIST_LANSTCHANGE"}]</a></td>
         <td class="listheader"></td>
     </tr>
     <!-- /table headers group -->
@@ -157,6 +157,7 @@ window.onload = function ()
         </tr>
     [{/foreach}]
     <!-- /listing -->
+    [{include file="pagenavisnippet.tpl" colspan="8"}]
 </table>
 </form>
 </div>

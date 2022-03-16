@@ -136,5 +136,46 @@ class Installer
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
 
         DatabaseProvider::getDb()->execute($sCreateImportItems);
+
+        // Add eventually missing columns to ettm_projects.
+        $aColumns = DatabaseProvider::getDb()->getAll("SHOW COLUMNS FROM `ettm_project` LIKE 'ONLY_UNTRANSLATED';");
+        if (0 === count($aColumns)) {
+            $sql = "ALTER TABLE `ettm_project`
+            ADD `ONLY_UNTRANSLATED` tinyint(4) NOT NULL DEFAULT '0';";
+            DatabaseProvider::getDb()->execute($sql);
+        }
+        unset($aColumns);
+
+        $aColumns = DatabaseProvider::getDb()->getAll("SHOW COLUMNS FROM `ettm_project` LIKE 'START_AFTER_EXPORT';");
+        if (0 === count($aColumns)) {
+            $sql = "ALTER TABLE `ettm_project`
+            ADD `START_AFTER_EXPORT` tinyint(4) NOT NULL DEFAULT '0';";
+            DatabaseProvider::getDb()->execute($sql);
+        }
+        unset($aColumns);
+
+        $aColumns = DatabaseProvider::getDb()->getAll("SHOW COLUMNS FROM `ettm_project` LIKE 'TRANSMITTED';");
+        if (0 === count($aColumns)) {
+            $sql = "ALTER TABLE `ettm_project`
+            ADD `TRANSMITTED` tinyint(4) NOT NULL DEFAULT '0';";
+            DatabaseProvider::getDb()->execute($sql);
+        }
+        unset($aColumns);
+
+        $aColumns = DatabaseProvider::getDb()->getAll("SHOW COLUMNS FROM `ettm_project` LIKE 'SKIPPED';");
+        if (0 === count($aColumns)) {
+            $sql = "ALTER TABLE `ettm_project`
+            ADD `SKIPPED` tinyint(4) NOT NULL DEFAULT '0';";
+            DatabaseProvider::getDb()->execute($sql);
+        }
+        unset($aColumns);
+
+        $aColumns = DatabaseProvider::getDb()->getAll("SHOW COLUMNS FROM `ettm_project` LIKE 'FAILED';");
+        if (0 === count($aColumns)) {
+            $sql = "ALTER TABLE `ettm_project`
+            ADD `FAILED` tinyint(4) NOT NULL DEFAULT '0';";
+            DatabaseProvider::getDb()->execute($sql);
+        }
+        unset($aColumns);
     }
 }

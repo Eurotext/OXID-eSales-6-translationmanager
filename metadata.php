@@ -9,7 +9,7 @@ $aModule = [
         'en' => 'Module for the text translation.',
     ],
     'thumbnail'    => 'logo.jpg',
-    'version'      => '2.7.0',
+    'version'      => '2.8.0',
     'author'       => 'mobilemojo – Apps & eCommerce UG (haftungsbeschränkt) & Co. KG',
     'url'          => 'https://www.mobilemojo.de',
     'email'        => 'info@mobilemojo.de',
