@@ -9,7 +9,7 @@
     "license": "GPL-3.0-only",
     "type": "oxideshop-module",
     "require": {
-        "php": "~7.0.0|~7.1.0|~7.2.0|~7.3.0",
+        "php": "~7",
         "ext-json": "*",
         "guzzlehttp/guzzle": "^6.3"
     },
